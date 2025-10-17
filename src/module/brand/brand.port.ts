@@ -1,4 +1,4 @@
-import { Brand } from "@prisma/client";
+import { Brand } from "./brand.model";
 import { Paginated, PagingDTO, Requester } from "src/share";
 import { CreateBrandDTO, UpdateBrandDTO, FilterBrandDTO } from "./brand.model";
 

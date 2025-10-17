@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { IPublicBrandRpc, Paginated, PagingDTO } from "src/share";
 import { IBrandRepository } from "./brand.port";
-import { Brand, Prisma } from "@prisma/client";
 import prisma from "src/share/components/prisma";
 import { FilterBrandDTO } from "./brand.model";
+import { Brand } from "./brand.model";
 import { Brand as PrismaBrand } from "@prisma/client";
 
 @Injectable()
