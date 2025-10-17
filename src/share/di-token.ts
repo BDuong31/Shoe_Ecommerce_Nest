@@ -1,0 +1,13 @@
+export const TOKEN_INTROSPECTOR = Symbol('TOKEN_INTROSPECTOR'); // Định danh cho token introspector
+export const EVENT_PUBLISHER = Symbol('EVENT_PUBLISHER'); // Định danh cho event publisher
+export const USER_RPC = Symbol('USER_RPC'); // Định danh cho user rpc
+export const ADDRESS_RPC = Symbol('ADDRESS_RPC'); // Định danh cho address rpc
+export const BRAND_RPC = Symbol('BRAND_RPC'); // Định danh cho brand rpc
+export const CATEGORY_RPC = Symbol('CATEGORY_RPC'); // Định danh cho category rpc
+export const PRODUCT_RPC = Symbol('PRODUCT_RPC'); // Định danh cho product rpc
+export const VARIANT_RPC = Symbol('VARIANT_RPC'); // Định danh cho variant rpc
+export const RATING_RPC = Symbol('RATING_RPC'); // Định danh cho rating rpc
+export const ORDER_RPC = Symbol('ORDER_RPC'); // Định danh cho order rpc
+export const PAYMENT_RPC = Symbol('PAYMENT_RPC'); // Định danh cho payment rpc
+export const SHIPPING_RPC = Symbol('SHIPPING_RPC'); // Định danh cho shipping rpc
+export const REMOTE_AUTH_GUARD = Symbol('REMOTE_AUTH_GUARD'); // Định danh cho remote auth guard

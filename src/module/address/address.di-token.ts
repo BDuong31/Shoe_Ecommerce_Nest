@@ -1,0 +1,3 @@
+export const ADDRESS_REPOSITORY = Symbol('ADDRESS_REPOSITORY');
+export const ADDRESS_SERVICE = Symbol('ADDRESS_SERVICE');
+export const ADDRESS_RPC_CLIENT = Symbol('ADDRESS_RPC_CLIENT');

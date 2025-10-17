@@ -1,0 +1,347 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  customer
+  admin
+}
+
+enum UserGender {
+  male
+  female
+  other
+}
+
+enum UserStatus {
+  active
+  pending
+  inactive
+  banned
+  deleted
+}
+
+enum OrderStatus {
+  Processing
+  Shipped
+  Delivered
+  Canceled
+}
+
+enum TransactionStatus {
+  pending
+  success
+  failed
+}
+
+enum DiscountType {
+  fixed
+  percentage
+}
+
+model User {
+  id            String      @id @map("id") @db.VarChar(36) 
+  avatar        String?       @map("avatar") @db.VarChar(255)
+  firstName     String      @map("first_name") @db.VarChar(100)
+  lastName      String      @map("last_name") @db.VarChar(100)
+  email         String?     @unique @map("email") @db.VarChar(255)
+  phone         String?     @map("phone") @db.VarChar(20)
+  password      String      @map("password") @db.VarChar(100)
+  salt          String      @map("salt") @db.VarChar(50)
+  gender        UserGender  @map("gender")
+  
+  walletAddress String?     @map("wallet_address") @db.VarChar(255)
+
+  role          UserRole    @map("role")
+  status        UserStatus? @default(active) @map("status")
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt     DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("users")
+  @@index([role], map: "roleIdx")
+  @@index([status], map: "userStatusIdx")
+}
+
+model Address {
+  id           String   @id @map("id") @db.VarChar(36) 
+  userId       String   @map("user_id") @db.VarChar(36) 
+  streetAdress String   @map("street_address") @db.VarChar(255)
+  cityProvince String   @map("city_province") @db.VarChar(255)
+  isDefault    Boolean  @default(false) @map("is_default")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("addresses")
+  @@index([userId], map: "addressUserIdIdx")
+}
+
+model Brand {
+  id        String    @id @map("id") @db.VarChar(36) 
+  name      String    @unique @map("name") @db.VarChar(100)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("brands")
+}
+
+model Category {
+  id        String    @id @map("id") @db.VarChar(36) 
+  name      String    @unique @map("name") @db.VarChar(100)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamp(0)
+  
+  @@map("categories")
+}
+
+model Product {
+  id          String @id @map("id") @db.VarChar(36) 
+  productName String @map("product_name") @db.VarChar(100)
+  description String @map("description") @db.Text
+  price       Float  @map("price") @db.DoublePrecision
+
+  brandId     String @map("brand_id") @db.VarChar(36) 
+  categoryId  String @map("category_id") @db.VarChar(36) 
+
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("products")
+  @@index([brandId], map: "brandIdIdx")
+  @@index([categoryId], map: "categoryIdIdx")
+}
+
+model ProductVariant {
+  id       String @id @map("id") @db.VarChar(36) 
+  size     Int    @map("size") @db.Integer
+  color    String @map("color") @db.VarChar(36)
+  sku      String @unique @map("sku") @db.VarChar(36)
+  quantity Int    @map("quantity") @db.Integer // Số lượng tồn kho
+
+  productId String @map("product_id") @db.VarChar(36) 
+  
+  createdAt  DateTime    @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt  DateTime    @updatedAt @map("updated_at") @db.Timestamp(0)
+  
+  @@map("product_variants")
+  @@index([productId], map: "variantProductIdIdx")
+}
+
+model Image {
+  id     String  @id @map("id") @db.VarChar(36) 
+  url    String  @map("url") @db.Text
+  isMain Boolean @default(false)
+
+  productId String @map("product_id") @db.VarChar(36) 
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("images")
+  @@index([productId], map: "imageProductIdIdx")
+}
+
+model Review {
+  id      String  @id @map("id") @db.VarChar(36) 
+  rating  Int     @map("rating") @db.SmallInt
+  comment String? @map("comment") @db.Text
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  productId String @map("product_id") @db.VarChar(36) 
+  userId    String @map("user_id") @db.VarChar(36) 
+
+  @@map("reviews")
+  @@index([productId], map: "reviewProductIdIdx")
+  @@index([userId], map: "reviewUserIdIdx")
+}
+
+model Cart {
+  id String @id @map("id") @db.VarChar(36) 
+
+  userId String @unique @map("user_id") @db.VarChar(36)
+
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("carts")
+}
+
+model CartItem {
+  id       String @id @map("id") @db.VarChar(36) 
+  quantity Int    @map("quantity") @db.Integer
+
+  cartId String @map("cart_id") @db.VarChar(36) 
+  variantId String @map("variant_id") @db.VarChar(36) 
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  
+  @@map("cart_items")
+  @@index([cartId], map: "cartItemCartIdIdx")
+  @@index([variantId], map: "cartItemVariantIdIdx")
+  @@unique([cartId, variantId])
+}
+
+model Order {
+  id                String @id @map("id") @db.VarChar(36) 
+  totalAmount       Float @map("total_amount")
+  status            OrderStatus @map("status")
+
+  userId            String @map("user_id") @db.VarChar(36) 
+  shippingAddressId String @map("shipping_address_id") @db.VarChar(36) 
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("orders")
+  @@index([userId], map: "orderUserIdIdx")
+  @@index([status], map: "orderStatusIdx")
+}
+
+model OrderItem {
+  id              String @id @map("id") @db.VarChar(36) 
+  quantity        Int
+  priceAtPurchase Float @map("price_at_purchase")
+
+  orderId String @map("order_id") @db.VarChar(36) 
+  variantId String @map("variant_id") @db.VarChar(36) 
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  
+  @@map("order_items")
+  @@index([orderId], map: "orderItemOrderIdIdx")
+  @@index([variantId], map: "orderItemVariantIdIdx")
+  @@unique([orderId, variantId])
+}
+
+model Payment {
+  id      String            @id @map("id") @db.VarChar(36) 
+  method  String @map("method")
+  amount  Float @map("amount")
+  status  TransactionStatus @map("status")
+
+  orderId String @unique @map("order_id") @db.VarChar(36)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("payments")
+  @@index([status], map: "paymentStatusIdx")
+}
+
+model Shipping {
+  id             String  @id @map("id") @db.VarChar(36) 
+  carrier        String
+  trackingNumber String? @map("tracking_number")
+  shippingCost   Float @map("shipping_cost")
+
+  orderId   String @unique @map("order_id") @db.VarChar(36) 
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("shippings")
+}
+
+model Coupon {
+  id            String       @id @map("id") @db.VarChar(36) 
+  code          String       @unique
+  type          DiscountType @map("type")
+  discountValue Float @map("discount_value")
+  expiryDate    DateTime @map("expiry_date")
+
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime      @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("coupons")
+}
+
+model OrderCoupon {
+  id              String @id @map("id") @db.VarChar(36) 
+  discountApplied Float @map("discount_applied")
+
+  orderId String @map("order_id") @db.VarChar(36)
+  couponId  String @map("coupon_id") @db.VarChar(36)
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("order_coupons")
+  @@index([orderId], map: "orderCouponOrderIdIdx")
+  @@index([couponId], map: "orderCouponCouponIdIdx")
+  @@unique([orderId, couponId])
+}
+
+model ProductToken {
+  id String @id @map("id") @db.VarChar(36) 
+
+  securityCode String @unique @map("security_code") @db.VarChar(100)
+  tokenId String @unique @map("token_id") @db.VarChar(255)
+  contractAddress String @map("contract_address") @db.VarChar(255)
+
+  mintTxHash String @unique @map("mint_tx_hash") @db.VarChar(66)
+  metadataCid String @unique @map("metadata_cid") @db.VarChar(100)
+
+  isTransferred Boolean @default(false) @map("is_transferred")
+  transferTxHash String? @unique @map("transfer_tx_hash") @db.VarChar(66)
+  initialOwnerWallet String @map("initial_owner_wallet") @db.VarChar(255)
+  currentOwnerWallet String? @map("current_owner_wallet") @db.VarChar(255)
+  isAuthentic Boolean @default(true) @map("is_authentic")
+  
+  variantId String @map("variant_id") @db.VarChar(36) 
+  
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+  
+  @@map("product_tokens")
+  @@index([variantId], map: "tokenVariantIdIdx")
+}
+
+model TokenActivation {
+  id String @id @map("id") @db.VarChar(36) 
+  
+  securityCode String @unique @map("security_code") @db.VarChar(100)
+
+  productTokenId String @unique @map("product_token_id") @db.VarChar(36)  
+  
+  activatorUserId String @map("activator_user_id") @db.VarChar(36) 
+  
+  recipientWallet String @map("recipient_wallet") @db.VarChar(255)
+  
+  isTransferComplete Boolean @default(false) @map("is_transfer_complete")
+  transferTxHash String? @unique @map("transfer_tx_hash") @db.VarChar(66) 
+
+  activatedAt DateTime @default(now()) @map("activated_at") @db.Timestamp(0)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
+
+  @@map("token_activations")
+  @@index([activatorUserId], map: "activatorUserIdIdx")
+}
+
+
+model AuthenticationLog {
+  id String @id @map("id") @db.VarChar(36) 
+
+  securityCode String @map("security_code") @db.VarChar(100)
+  
+  ipAddress String @map("ip_address") @db.VarChar(50)
+  userAgent String? @map("user_agent") @db.VarChar(512)
+  isSuspicious Boolean @default(false) @map("is_suspicious")
+
+  isGenuine Boolean @map("is_genuine")
+  
+  productTokenId String @map("product_token_id") @db.VarChar(36) 
+
+  checkedAt DateTime @default(now()) @map("checked_at") @db.Timestamp(0)
+
+  @@map("authentication_logs")
+  @@index([productTokenId], map: "productTokenIdIdx")
+}
