@@ -7,6 +7,7 @@ import { UserModule } from './module/user/user.module';
 import { AddressModule } from './module/address/address.module';
 import { BrandModule } from './module/brand/brand.module';
 import { CategoryModule } from './module/category/category.module';
+import { ProductModule } from './module/product/product.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CategoryModule } from './module/category/category.module';
     AddressModule,
     BrandModule,
     CategoryModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],

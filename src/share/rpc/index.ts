@@ -1,5 +1,7 @@
 export * from './user.rpc';
 export * from './address.rpc';
+export * from './brand.rpc';
+export * from './category.rpc';
 export * from './product.rpc';
 export * from './variant.rpc';
 export * from './rating.rpc';

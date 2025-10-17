@@ -4,11 +4,11 @@ import { PublicCategory } from "../data-model";
 import axios from "axios";
 
 @Injectable()
-export class BrandRPCClient implements IPublicCategoryRpc{
-    constructor(private readonly brandServiceUrl: string) {}
+export class CategoryRPCClient implements IPublicCategoryRpc{
+    constructor(private readonly categoryServiceUrl: string) {}
     async findById(id: string): Promise<PublicCategory | null> {
         try {
-            const { data } = await axios.get(`${this.brandServiceUrl}/rpc/categories/${id}`)
+            const { data } = await axios.get(`${this.categoryServiceUrl}/rpc/${id}`)
             const category = data.data;
             return {
                 id: category.id,
@@ -23,7 +23,7 @@ export class BrandRPCClient implements IPublicCategoryRpc{
     }
     async findByIds(ids: string[]): Promise<Array<PublicCategory>> {
         try {
-            const { data } = await axios.post(`${this.brandServiceUrl}/rpc/categories/batch`, { ids })
+            const { data } = await axios.post(`${this.categoryServiceUrl}/rpc/list-by-ids`, { ids })
             const categories = data.data;
             return categories.map((category: any) => {
                 return {

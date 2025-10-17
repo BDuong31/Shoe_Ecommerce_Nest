@@ -18,6 +18,7 @@ export const config = {
         userServiceURL: process.env.USER_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ người dùng
         addressServiceURL: process.env.ADDRESS_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ địa chỉ
         productServiceURL: process.env.PRODUCT_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ sản phẩm
+        brandServiceURL: process.env.BRAND_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ thương hiệu
         categoryServiceURL: process.env.CATEGORY_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ danh mục
         variationServiceURL: process.env.VARIATION_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ biến thể
         imageServiceURL: process.env.IMAGE_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ hình ảnh
