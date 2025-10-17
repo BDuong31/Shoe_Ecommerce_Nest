@@ -35,7 +35,7 @@ export class BrandService implements IBrandService {
         return newId;
     }
 
-    async update(brandId: string, dto: CreateBrandDTO, requester: Requester): Promise<boolean> {
+    async update(brandId: string, dto: CreateBrandDTO): Promise<boolean> {
 
         const data = updateBrandDTOSchema.parse(dto);
 
@@ -55,7 +55,7 @@ export class BrandService implements IBrandService {
         return true;
     }
 
-    async delete(brandId: string, requester: Requester): Promise<boolean> {
+    async delete(brandId: string): Promise<boolean> {
 
         const brandExist = await this.brandRepo.get(brandId);
 

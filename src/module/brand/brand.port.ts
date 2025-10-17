@@ -4,8 +4,8 @@ import { CreateBrandDTO, UpdateBrandDTO, FilterBrandDTO } from "./brand.model";
 
 export interface IBrandService {
     create(dto: CreateBrandDTO): Promise<string>;
-    update(brandId: string, dto: UpdateBrandDTO, requester: Requester): Promise<boolean>;
-    delete(brandId: string, requester: Requester): Promise<boolean>;
+    update(brandId: string, dto: UpdateBrandDTO): Promise<boolean>;
+    delete(brandId: string): Promise<boolean>;
 }
 
 export interface IBrandRepository {

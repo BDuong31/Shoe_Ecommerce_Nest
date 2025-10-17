@@ -83,7 +83,7 @@ export class AddressHttpController {
         return { data };
     }
 
-    @Get('rpc//:addressId/belongs-to/:userId')
+    @Get('rpc/:addressId/belongs-to/:userId')
     @HttpCode(HttpStatus.OK)
     async checkAddressBelongToUser(@Request() req: ReqWithRequester, @Param('addressId') addressId: string, @Param('userId') userId: string){
         const result = await this.service.checkAddressBelongToUser(addressId, userId);
