@@ -12,22 +12,22 @@ export const brandSchema = z.object({
     updatedAt: z.date(),
 })
 
-export interface Brand extends z.infer<typeof brandSchema> {}
+export type Brand = z.infer<typeof brandSchema>;
 
 export const createBrandDTOSchema = brandSchema.pick({
     name: true,
 }).required();
 
-export interface CreateBrandDTO extends z.infer<typeof createBrandDTOSchema> {}
+export type CreateBrandDTO = z.infer<typeof createBrandDTOSchema>;
 
 export const updateBrandDTOSchema = brandSchema.pick({
     name: true,
 }).partial();
 
-export interface UpdateBrandDTO extends z.infer<typeof updateBrandDTOSchema> {}
+export type UpdateBrandDTO = z.infer<typeof updateBrandDTOSchema>;
 
 export const filterBrandDTOSchema = brandSchema.pick({
     name: true,
 }).partial();
 
-export interface FilterBrandDTO extends z.infer<typeof filterBrandDTOSchema> {}
+export type FilterBrandDTO = z.infer<typeof filterBrandDTOSchema>;

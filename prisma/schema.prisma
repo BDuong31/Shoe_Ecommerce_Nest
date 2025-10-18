@@ -137,6 +137,7 @@ model Image {
   isMain Boolean @default(false)
 
   productId String @map("product_id") @db.VarChar(36) 
+  publicId  String @map("public_id") @db.VarChar(255)
   
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamp(0)
