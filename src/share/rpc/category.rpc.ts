@@ -8,7 +8,7 @@ export class CategoryRPCClient implements IPublicCategoryRpc{
     constructor(private readonly categoryServiceUrl: string) {}
     async findById(id: string): Promise<PublicCategory | null> {
         try {
-            const { data } = await axios.get(`${this.categoryServiceUrl}/rpc/${id}`)
+            const { data } = await axios.get(`${this.categoryServiceUrl}/categories/rpc/${id}`)
             const category = data.data;
             return {
                 id: category.id,
@@ -23,7 +23,7 @@ export class CategoryRPCClient implements IPublicCategoryRpc{
     }
     async findByIds(ids: string[]): Promise<Array<PublicCategory>> {
         try {
-            const { data } = await axios.post(`${this.categoryServiceUrl}/rpc/list-by-ids`, { ids })
+            const { data } = await axios.post(`${this.categoryServiceUrl}/categories/rpc/list-by-ids`, { ids })
             const categories = data.data;
             return categories.map((category: any) => {
                 return {

@@ -1,3 +1,4 @@
+import { PublicBrand, publicBrandSchema, PublicCategory, publicCategorySchema } from 'src/share';
 import { z } from 'zod';
 
 export const ErrProductNameRequired = new Error('Product name is required');
@@ -22,7 +23,7 @@ export const productSchema = z.object({
     updatedAt: z.date(),
 })
 
-export interface Product extends z.infer<typeof productSchema> {}
+export type Product =  z.infer<typeof productSchema> & { brand?: PublicBrand, category?: PublicCategory }
 
 export const createProductDTOSchema = productSchema.pick({
     productName: true,
@@ -32,7 +33,7 @@ export const createProductDTOSchema = productSchema.pick({
     categoryId: true,
 }).required();
 
-export interface CreateProductDTO extends z.infer<typeof createProductDTOSchema> {}
+export type CreateProductDTO = z.infer<typeof createProductDTOSchema>;
 
 export const updateProductDTOSchema = productSchema.pick({
     productName: true,
@@ -42,7 +43,7 @@ export const updateProductDTOSchema = productSchema.pick({
     categoryId: true,
 }).partial();
 
-export interface UpdateProductDTO extends z.infer<typeof updateProductDTOSchema> {}
+export type UpdateProductDTO = z.infer<typeof updateProductDTOSchema>;
 
 export const filterProductDTOSchema = productSchema.pick({
     productName: true,
@@ -52,4 +53,4 @@ export const filterProductDTOSchema = productSchema.pick({
     categoryId: true,
 }).partial();
 
-export interface FilterProductDTO extends z.infer<typeof filterProductDTOSchema> {}
+export type FilterProductDTO = z.infer<typeof filterProductDTOSchema>;

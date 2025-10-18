@@ -59,19 +59,20 @@ export class ProductService implements IProductService {
 
         const data = updateProductDTOSchema.parse(dto);
 
-        const productExist = await this.repo.get(productId);
+        const product = await this.repo.get(productId);
 
-        if (!productExist) {
+        if (!product) {
             throw AppError.from(ErrProductNotFound, 404);
         }
 
-        const brand = await this.brandRpc.findById(data.brandId);
+
+        const brand = await this.brandRpc.findById(product.brandId);
 
         if (!brand) {
             throw AppError.from(ErrBrandNotFound, 404);
         }
 
-        const category = await this.categoryRpc.findById(data.categoryId);
+        const category = await this.categoryRpc.findById(product.categoryId);
 
         if (!category) {
             throw AppError.from(ErrCategoryNotFound, 404);

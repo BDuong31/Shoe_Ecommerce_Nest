@@ -9,7 +9,7 @@ export class BrandRPCClient implements IPublicBrandRpc {
 
     async findById(id: string): Promise<PublicBrand | null> {
         try {
-            const { data } = await axios.get(`${this.productServiceUrl}/rpc/${id}`)
+            const { data } = await axios.get(`${this.productServiceUrl}/brands/rpc/${id}`)
             const brand = data.data;
             return {
                 id: brand.id,
@@ -24,7 +24,7 @@ export class BrandRPCClient implements IPublicBrandRpc {
 
     async findByIds(ids: string[]): Promise<Array<PublicBrand>> {
         try {
-            const { data } = await axios.post(`${this.productServiceUrl}/rpc/list-by-ids`, { ids })
+            const { data } = await axios.post(`${this.productServiceUrl}/brands/rpc/list-by-ids`, { ids })
             const brands = data.data.map((brand: any) => {
                 return {
                     id: brand.id,
