@@ -8,7 +8,7 @@ export class ProductRPCClient implements IPublicProductRpc {
 
     async findById(id: string): Promise<PublicProduct | null> {
         try {
-            const { data } = await axios.get(`${this.productServiceUrl}/rpc/products/${id}`)
+            const { data } = await axios.get(`${this.productServiceUrl}/products/rpc/${id}`)
             const product = data.data;
             return {
                 id: product.id,
@@ -26,7 +26,7 @@ export class ProductRPCClient implements IPublicProductRpc {
     }
 
     async findByIds(ids: string[]): Promise<Array<PublicProduct>> {
-        const { data } = await axios.post(`${this.productServiceUrl}/rpc/products/list-by-ids`, { ids });
+        const { data } = await axios.post(`${this.productServiceUrl}/products/rpc/list-by-ids`, { ids });
 
         const products = data.data.map((product: any) => {
             return {
