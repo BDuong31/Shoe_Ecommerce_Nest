@@ -1,0 +1,4 @@
+export const CART_REPOSITORY = Symbol('CART_REPOSITORY');
+export const CART_SERVICE = Symbol('CART_SERVICE');
+export const CART_ITEM_SERVICE = Symbol('CART_ITEM_SERVICE');
+export const CART_ITEM_REPOSITORY = Symbol('CART_ITEM_REPOSITORY');

@@ -166,11 +166,13 @@ model Cart {
   id String @id @map("id") @db.VarChar(36) 
 
   userId String @unique @map("user_id") @db.VarChar(36)
+  totalItem Int @map("total_item") @db.Integer
 
   createdAt DateTime   @default(now()) @map("created_at") @db.Timestamp(0)
   updatedAt DateTime   @updatedAt @map("updated_at") @db.Timestamp(0)
 
   @@map("carts")
+  @@index([userId], map: "cartUserIdIdx")
 }
 
 model CartItem {
