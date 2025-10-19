@@ -8,6 +8,7 @@ export const PRODUCT_RPC = Symbol('PRODUCT_RPC'); // Định danh cho product rp
 export const VARIANT_RPC = Symbol('VARIANT_RPC'); // Định danh cho variant rpc
 export const RATING_RPC = Symbol('RATING_RPC'); // Định danh cho rating rpc
 export const ORDER_RPC = Symbol('ORDER_RPC'); // Định danh cho order rpc
+export const COUPON_RPC = Symbol('COUPON_RPC'); // Định danh cho coupon rpc
 export const PAYMENT_RPC = Symbol('PAYMENT_RPC'); // Định danh cho payment rpc
 export const SHIPPING_RPC = Symbol('SHIPPING_RPC'); // Định danh cho shipping rpc
 export const REMOTE_AUTH_GUARD = Symbol('REMOTE_AUTH_GUARD'); // Định danh cho remote auth guard

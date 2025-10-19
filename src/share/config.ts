@@ -23,6 +23,7 @@ export const config = {
         variationServiceURL: process.env.VARIATION_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ biến thể
         imageServiceURL: process.env.IMAGE_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ hình ảnh
         cartServiceURL: process.env.CART_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ giỏ hàng
+        couponServiceURL: process.env.COUPON_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ coupon
         orderServiceURL: process.env.ORDER_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ đơn hàng
         shippingServiceURL: process.env.SHIPPING_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ vận chuyển
         paymentServiceURL: process.env.PAYMENT_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ thanh toán

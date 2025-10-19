@@ -13,6 +13,11 @@ export enum BaseStatus {
   DELETED = 'deleted',
 }
 
+export enum CouponType {
+  FIXED = 'fixed',
+  PERCENTAGE = 'percentage',
+}
+
 export const publicUserSchema = z.object({
     id: z.string().uuid(),
     firstName: z.string(),
@@ -113,6 +118,18 @@ export const publicRatinngSchema = z.object({
 })
 
 export interface PublicRating extends z.infer<typeof publicRatinngSchema> {}
+
+export const publicCouponSchema = z.object({
+  id: z.string().uuid(),
+  code: z.string(),
+  type: z.nativeEnum(CouponType),
+  discountValue: z.number().nonnegative().default(0),
+  expiryDate: z.date(),
+  createdAt: z.date(),
+  updatedAt: z.date().optional(),
+})
+
+export interface PublicCoupon extends z.infer<typeof publicCouponSchema> {}
 
 export const publicOrderSchema = z.object({
   id: z.string().uuid(),

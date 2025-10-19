@@ -1,4 +1,4 @@
-import { CreateOrderDTO, CreateOrderItemDTO, FilterOrderDTO, FilterOrderItemDTO, Order, OrderItems, UpdateOrderItemDTO, UpdateOrderStatusDTO } from './order.model';
+import { CreateOrderCouponDTO, CreateOrderDTO, CreateOrderItemDTO, FilterOrderDTO, FilterOrderItemDTO, Order, OrderCoupon, OrderItems, UpdateOrderItemDTO, UpdateOrderStatusDTO } from './order.model';
 import { Paginated, PagingDTO, Requester } from 'src/share';
 
 export interface IOrderService {
@@ -11,6 +11,11 @@ export interface IOrderItemService {
     create(dto: CreateOrderItemDTO): Promise<string>;
     update(orderItemId: string, dto: UpdateOrderItemDTO): Promise<boolean>;
     delete(orderItemId: string): Promise<boolean>;
+}
+
+export interface IOrderCouponService {
+    create(dto: CreateOrderCouponDTO): Promise<string>;
+    delete(orderId: string): Promise<boolean>;
 }
 
 export interface IOrderRepository {
@@ -31,4 +36,10 @@ export interface IOrderItemRepository {
     insert(orderItem: OrderItems): Promise<void>;
     update(id: string, dto: UpdateOrderItemDTO): Promise<void>;
     delete(id: string): Promise<void>;
+}
+
+export interface IOrderCouponRepository {
+    get(orderId: string): Promise<OrderCoupon | null>;
+    insert(dto: CreateOrderCouponDTO): Promise<void>;
+    delete(orderId: string): Promise<void>;
 }

@@ -1,4 +1,4 @@
-import { AppEvent, PublicAddress, PublicBrand, PublicCategory, PublicOrder, PublicOrderItem, PublicPayment, PublicProduct, PublicRating, PublicShipping, PublicUser, PublicVariant } from "./data-model";
+import { AppEvent, PublicAddress, PublicBrand, PublicCategory, PublicCoupon, PublicOrder, PublicOrderItem, PublicPayment, PublicProduct, PublicRating, PublicShipping, PublicUser, PublicVariant } from "./data-model";
 export interface TokenPayload {
   sub: string;
   role: UserRole;
@@ -67,6 +67,11 @@ export interface IPublicVariantRpc {
 
 export interface IPublicRatingRpc {
   getProductAvgRating(id: string): Promise<PublicRating | null>;
+}
+
+export interface IPublicCouponRpc {
+  findById(id: string): Promise<PublicCoupon | null>;
+  findByIds(ids: string[]): Promise<Array<PublicCoupon>>;
 }
 
 export interface IPublicOrderRpc {

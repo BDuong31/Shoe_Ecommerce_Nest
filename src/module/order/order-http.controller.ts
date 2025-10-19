@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
-import { ORDER_REPOSITORY, ORDER_SERVICE, ORDER_ITEM_REPOSITORY, ORDER_ITEM_SERVICE } from "./order.di-token";
-import { IOrderRepository, IOrderService, IOrderItemRepository, IOrderItemService } from "./order.port";
+import { ORDER_REPOSITORY, ORDER_SERVICE, ORDER_ITEM_REPOSITORY, ORDER_ITEM_SERVICE, ORDER_COUPON_SERVICE, ORDER_COUPON_REPOSITORY } from "./order.di-token";
+import { IOrderRepository, IOrderService, IOrderItemRepository, IOrderItemService, IOrderCouponService, IOrderCouponRepository } from "./order.port";
 import { RemoteAuthGuard, Roles, RolesGuard } from "src/share/guard";
 import { paginatedResponse, PagingDTO, pagingDTOSchema, ReqWithRequester, UserRole } from "src/share";
-import { CreateOrderDTO, CreateOrderItemDTO, FilterOrderDTO, FilterOrderItemDTO, FilterOrderItemSchema, FilterOrderSchema, UpdateOrderStatusDTO } from "./order.model";
+import { CreateOrderCouponDTO, CreateOrderDTO, CreateOrderItemDTO, FilterOrderDTO, FilterOrderItemDTO, FilterOrderItemSchema, FilterOrderSchema, UpdateOrderStatusDTO } from "./order.model";
 
 @Controller('v1/orders')
 export class OrderHttpController {
@@ -132,6 +132,59 @@ export class OrderItemHttpController {
     @HttpCode(HttpStatus.OK)
     async listOrderItemsByIds(@Request() req: ReqWithRequester, @Body() dto: { ids: string[] }){
         const data = await this.repo.listByIds(dto.ids);
+        return { data };
+    }
+}
+
+@Controller('v1/orders/coupons')
+export class OrderCouponHttpController {
+    constructor(
+        @Inject(ORDER_COUPON_SERVICE) private readonly service: IOrderCouponService,
+        @Inject(ORDER_COUPON_REPOSITORY) private readonly repo: IOrderCouponRepository,
+    ) {}
+
+    @Post()
+    @UseGuards(RemoteAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    async applyCouponToOrder(@Body() dto: CreateOrderCouponDTO){
+        await this.service.create(dto);
+        return { data: true };
+    }
+
+    @Get(':orderId')
+    @UseGuards(RemoteAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    async getCouponOfOrder(@Request() req: ReqWithRequester, @Param('orderId') orderId: string){
+        const data = await this.repo.get(orderId);
+        return { data };
+    }
+
+    @Delete(':orderId')
+    @UseGuards(RemoteAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    async removeCouponFromOrder(@Param('orderId') orderId: string){
+        await this.service.delete(orderId);
+        return { data: true };
+    }
+
+    @Post('rpc')
+    @HttpCode(HttpStatus.OK)
+    async createOrderCouponRpc(@Request() req: ReqWithRequester, @Body() dto: CreateOrderCouponDTO){
+        const data = await this.service.create(dto);
+        return { data };
+    }
+
+    @Get('rpc/:orderId')
+    @HttpCode(HttpStatus.OK)
+    async getOrderCouponRpc(@Request() req: ReqWithRequester, @Param('orderId') orderId: string){
+        const data = await this.repo.get(orderId);
+        return { data };
+    }
+
+    @Delete('rpc/:orderId')
+    @HttpCode(HttpStatus.OK)
+    async deleteOrderCouponRpc(@Request() req: ReqWithRequester, @Param('orderId') orderId: string){
+        const data = await this.service.delete(orderId);
         return { data };
     }
 }

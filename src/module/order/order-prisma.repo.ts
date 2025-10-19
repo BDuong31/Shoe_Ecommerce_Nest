@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
-import { IOrderRepository, IOrderItemRepository } from "./order.port";
+import { IOrderRepository, IOrderItemRepository, IOrderCouponRepository } from "./order.port";
 import prisma from "src/share/components/prisma";
-import { FilterOrderDTO, FilterOrderItemDTO } from "./order.model";
+import { CreateOrderCouponDTO, FilterOrderDTO, FilterOrderItemDTO, OrderCoupon } from "./order.model";
 import { Order, OrderItems } from "./order.model";
 import { Order as PrismaOrder, OrderItem as PrismaOrderItems } from "@prisma/client";
 import { Paginated, PagingDTO } from "src/share/data-model";
@@ -149,3 +149,20 @@ export class OrderItemPrismaRepository implements IOrderItemRepository {
         return data as OrderItems;
     }
 }   
+
+@Injectable()
+export class OrderCouponPrismaRepository implements IOrderCouponRepository {
+    async get(orderId: string): Promise<OrderCoupon | null> {
+        const data = await prisma.orderCoupon.findFirst({ where: { orderId } });
+        if (!data) return null;
+        
+        return data as OrderCoupon;
+    }
+    async insert(dto: OrderCoupon): Promise<void> {
+        await prisma.orderCoupon.create({ data: dto });
+    }
+
+    async delete(orderId: string): Promise<void> {
+        await prisma.orderCoupon.deleteMany({ where: { orderId: orderId } });
+    }
+}

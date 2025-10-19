@@ -1,10 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { IOrderItemRepository, IOrderItemService, IOrderRepository, IOrderService } from './order.port';
-import { ORDER_ITEM_REPOSITORY, ORDER_REPOSITORY } from './order.di-token';
-import { AppError, IPublicAddressRpc, IPublicVariantRpc, Requester } from 'src/share';
+import { IOrderCouponRepository, IOrderCouponService, IOrderItemRepository, IOrderItemService, IOrderRepository, IOrderService } from './order.port';
+import { ORDER_COUPON_REPOSITORY, ORDER_ITEM_REPOSITORY, ORDER_REPOSITORY } from './order.di-token';
+import { AppError, IPublicAddressRpc, IPublicCouponRpc, IPublicVariantRpc, Requester } from 'src/share';
 import { v7 } from 'uuid';
-import { CreateOrderDTO, CreateOrderItemDTO, ErrOrderNotFound, ErrShippingAddressIdRequired, OrderStatus, UpdateOrderItemDTO } from './order.model';
-import { ADDRESS_RPC, SHIPPING_RPC, VARIANT_RPC } from 'src/share/di-token';
+import { CreateOrderCouponDTO, CreateOrderDTO, CreateOrderItemDTO, ErrOrderNotFound, ErrShippingAddressIdRequired, OrderStatus, UpdateOrderItemDTO } from './order.model';
+import { ADDRESS_RPC, COUPON_RPC } from 'src/share/di-token';
 
 @Injectable()
 export class OrderService implements IOrderService {
@@ -117,6 +117,51 @@ export class OrderItemService implements IOrderItemService {
         }
 
         await this.orderItemRepo.delete(orderItemId);
+        return true;
+    }
+}
+
+@Injectable()
+export class OrderCouponService implements IOrderCouponService {
+    constructor(
+        @Inject(ORDER_REPOSITORY) private readonly orderRepo: IOrderRepository,
+        @Inject(COUPON_RPC) private readonly couponRpc: IPublicCouponRpc,
+        @Inject(ORDER_COUPON_REPOSITORY) private readonly orderCouponRepo: IOrderCouponRepository,
+    ) {}
+
+    async create(dto: CreateOrderCouponDTO): Promise<string> {
+        const coupon = await this.couponRpc.findById(dto.couponId);
+
+        if (!coupon) {
+            throw AppError.from(ErrOrderNotFound, 404);
+        }
+
+        const order = await this.orderRepo.get(dto.orderId);
+        if (!order) {
+            throw AppError.from(ErrOrderNotFound, 404);
+        }
+
+        const newId = v7();
+
+        const newOrderCoupon = {
+            id: newId,
+            ...dto,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+
+        await this.orderCouponRepo.insert(newOrderCoupon);
+
+        return newId;
+    }
+
+    async delete(orderId: string): Promise<boolean> {
+        const order = await this.orderRepo.get(orderId);
+        if (!order) {
+            throw AppError.from(ErrOrderNotFound, 404);
+        }
+
+        await this.orderCouponRepo.delete(orderId);
         return true;
     }
 }

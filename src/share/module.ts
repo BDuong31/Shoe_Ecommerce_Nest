@@ -1,8 +1,9 @@
 import { Module, Provider } from "@nestjs/common";
 import { RedisClient } from "./components";
 import { config } from "./config";
-import { ADDRESS_RPC, BRAND_RPC, CATEGORY_RPC, EVENT_PUBLISHER, ORDER_RPC, PAYMENT_RPC, PRODUCT_RPC, RATING_RPC, SHIPPING_RPC, TOKEN_INTROSPECTOR, USER_RPC, VARIANT_RPC,  } from "./di-token";
+import { ADDRESS_RPC, BRAND_RPC, CATEGORY_RPC, COUPON_RPC, EVENT_PUBLISHER, ORDER_RPC, PAYMENT_RPC, PRODUCT_RPC, RATING_RPC, SHIPPING_RPC, TOKEN_INTROSPECTOR, USER_RPC, VARIANT_RPC,  } from "./di-token";
 import { TokenIntrospectRPCClient, UserRPCClient, AddressRPCClient, ProductRPCClient, VariantRPCClient, RatingRPCClient, OrderRPCClient, PaymentRPCClient, ShippingRPCClient, BrandRPCClient, CategoryRPCClient } from "./rpc";
+import { CouponRPCClient } from "./rpc/coupon.rpc";
 
 // Khởi tạo client cho việc kiểm tra token
 const tokenRPCClient = new TokenIntrospectRPCClient(config.rpc.introspectUrl);
@@ -55,6 +56,12 @@ const ratingRPC: Provider = {
   useValue: ratingRPCClient,
 };
 
+const couponRPCClient = new CouponRPCClient(config.rpc.couponServiceURL);
+const couponRPC: Provider = {
+  provide: COUPON_RPC,
+  useValue: couponRPCClient,
+};
+
 const orderRPCClient = new OrderRPCClient(config.rpc.orderServiceURL);
 const orderRPC: Provider = {
   provide: ORDER_RPC,
@@ -85,8 +92,8 @@ const redisClient: Provider = {
 
 // Tạo module chia sẻ
 @Module({
-  providers: [tokenIntrospector, userRPC, addressRPC, brandRPC, categoryRPC, productRPC, variantRPC, ratingRPC, orderRPC, paymentRPC, shippingRPC, redisClient],
-  exports: [tokenIntrospector, userRPC, addressRPC, brandRPC, categoryRPC, productRPC, variantRPC, ratingRPC, orderRPC, paymentRPC, shippingRPC, redisClient]
+  providers: [tokenIntrospector, userRPC, addressRPC, brandRPC, categoryRPC, productRPC, variantRPC, couponRPC, ratingRPC, orderRPC, paymentRPC, shippingRPC, redisClient],
+  exports: [tokenIntrospector, userRPC, addressRPC, brandRPC, categoryRPC, productRPC, variantRPC, couponRPC, ratingRPC, orderRPC, paymentRPC, shippingRPC, redisClient]
 })
 
 export class ShareModule { }

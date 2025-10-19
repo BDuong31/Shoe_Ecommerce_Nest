@@ -84,3 +84,35 @@ export const FilterOrderItemSchema = z.object({
 });
 
 export type FilterOrderItemDTO = z.infer<typeof FilterOrderItemSchema>;
+
+export const OrderCouponSchema = z.object({
+    id: z.string().uuid(),
+    discountApplied: z.number().nonnegative(),
+    orderId: z.string().uuid(),
+    couponId: z.string().uuid(),
+    createdAt: z.date(),
+    updatedAt: z.date()
+})
+
+export type OrderCoupon = z.infer<typeof OrderCouponSchema>;
+
+export const CreateOrderCouponSchema = z.object({
+    discountApplied: z.number().nonnegative(),
+    orderId: z.string().uuid(),
+    couponId: z.string().uuid()
+});
+
+export type CreateOrderCouponDTO = z.infer<typeof CreateOrderCouponSchema>;
+
+export const UpdateOrderCouponSchema = z.object({
+    discountApplied: z.number().nonnegative().optional()
+});
+
+export type UpdateOrderCouponDTO = z.infer<typeof UpdateOrderCouponSchema>;
+
+export const FilterOrderCouponSchema = z.object({
+    orderId: z.string().uuid().optional(),
+    couponId: z.string().uuid().optional()
+});
+
+export type FilterOrderCouponDTO = z.infer<typeof FilterOrderCouponSchema>;
