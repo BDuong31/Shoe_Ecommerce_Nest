@@ -11,6 +11,7 @@ import { ProductModule } from './module/product/product.module';
 import { ImageModule } from './module/image/image.module';
 import { VariationModule } from './module/variation/variation.module';
 import { CartModule } from './module/cart/cart.module';
+import { CouponModule } from './module/coupon/coupon.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { CartModule } from './module/cart/cart.module';
     ImageModule,
     VariationModule,
     CartModule,
+    CouponModule
   ],
   controllers: [AppController],
   providers: [AppService],

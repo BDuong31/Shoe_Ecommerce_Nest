@@ -1,0 +1,2 @@
+export const COUPON_REPOSITORY = Symbol('COUPON_REPOSITORY');
+export const COUPON_SERVICE = Symbol('COUPON_SERVICE');

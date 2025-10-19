@@ -2,15 +2,19 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ICartItemRepository, ICartItemService, ICartRepository, ICartService } from './cart.port';
 import { CART_ITEM_REPOSITORY, CART_ITEM_SERVICE, CART_REPOSITORY } from './cart.di-token';
 import { Cart, CartItem, CreateCartDTO, ErrCartNotFound } from './cart.model';
-import { AppError, IPublicUserRpc } from 'src/share';
+import { AppError, IPublicProductRpc, IPublicUserRpc, IPublicVariantRpc, Requester } from 'src/share';
 import { v7 } from 'uuid';
-import { USER_RPC } from 'src/share/di-token';
+import { PRODUCT_RPC, USER_RPC, VARIANT_RPC } from 'src/share/di-token';
 import { ErrUserNotFound } from '../address/address.model';
+import { ErrVariationNotFound } from '../variation/variation.model';
 
 @Injectable()
 export class CartService implements ICartService {
     constructor(
         @Inject(CART_REPOSITORY) private readonly cartRepo: ICartRepository,
+        @Inject(CART_ITEM_REPOSITORY) private readonly cartItemRepo: ICartItemRepository,
+        @Inject(VARIANT_RPC) private readonly variantRpc: IPublicVariantRpc,
+        @Inject(PRODUCT_RPC) private readonly productRpc: IPublicProductRpc,
         @Inject(USER_RPC) private readonly userRpc: IPublicUserRpc,
     ) {}
 
