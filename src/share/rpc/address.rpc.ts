@@ -8,7 +8,7 @@ export class AddressRPCClient implements IPublicAddressRpc {
 
     async findById(id: string): Promise<PublicAddress | null> {
         try {
-            const { data } = await axios.get(`${this.addressServiceUrl}/rpc/${id}`)
+            const { data } = await axios.post(`${this.addressServiceUrl}/addresses/rpc/${id}`)
             const address = data.data;
             return {
                 id: address.id,

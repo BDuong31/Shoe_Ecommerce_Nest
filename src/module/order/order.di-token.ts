@@ -1,0 +1,4 @@
+export const ORDER_REPOSITORY = Symbol('ORDER_REPOSITORY');
+export const ORDER_SERVICE = Symbol('ORDER_SERVICE');
+export const ORDER_ITEM_REPOSITORY = Symbol('ORDER_ITEM_REPOSITORY');
+export const ORDER_ITEM_SERVICE = Symbol('ORDER_ITEM_SERVICE');

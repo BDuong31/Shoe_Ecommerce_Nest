@@ -12,6 +12,7 @@ import { ImageModule } from './module/image/image.module';
 import { VariationModule } from './module/variation/variation.module';
 import { CartModule } from './module/cart/cart.module';
 import { CouponModule } from './module/coupon/coupon.module';
+import { OrderModule } from './module/order/order.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { CouponModule } from './module/coupon/coupon.module';
     ImageModule,
     VariationModule,
     CartModule,
-    CouponModule
+    CouponModule,
+    OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],
