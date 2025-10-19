@@ -13,6 +13,7 @@ import { VariationModule } from './module/variation/variation.module';
 import { CartModule } from './module/cart/cart.module';
 import { CouponModule } from './module/coupon/coupon.module';
 import { OrderModule } from './module/order/order.module';
+import { ShippingModule } from './module/shipping/shipping.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { OrderModule } from './module/order/order.module';
     VariationModule,
     CartModule,
     CouponModule,
-    OrderModule
+    OrderModule,
+    ShippingModule
   ],
   controllers: [AppController],
   providers: [AppService],
