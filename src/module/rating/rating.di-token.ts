@@ -1,0 +1,2 @@
+export const RATING_SERVICE = Symbol('RATING_SERVICE');
+export const RATING_REPOSITORY = Symbol('RATING_REPOSITORY');
