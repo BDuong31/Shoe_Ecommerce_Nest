@@ -16,6 +16,7 @@ import { OrderModule } from './module/order/order.module';
 import { ShippingModule } from './module/shipping/shipping.module';
 import { PaymentModule } from './module/payment/payment.module';
 import { RatingModule } from './module/rating/rating.module';
+import { TokenModule } from './module/token/token.module';
 
 @Module({
   imports: [
@@ -35,7 +36,8 @@ import { RatingModule } from './module/rating/rating.module';
     OrderModule,
     ShippingModule,
     PaymentModule,
-    RatingModule
+    RatingModule,
+    TokenModule,
   ],
   controllers: [AppController],
   providers: [AppService],
