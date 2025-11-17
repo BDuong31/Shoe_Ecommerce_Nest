@@ -1,3 +1,4 @@
+import { create } from 'domain';
 import { UserRole } from 'src/share'
 import { z } from 'zod';
 
@@ -15,8 +16,13 @@ export enum Status {
     DELETED = 'deleted',
 }
 
-export const ErrFirstNameAtLeast2Chars = new Error('First name must be at least 2 characters');
-export const ErrLastNameAtLeast2Chars = new Error('Last name must be at least 2 characters');
+export enum UserCouponStatus {
+    AVAILABLE = 'available',
+    USED = 'used',
+    EXPIRED = 'expired',
+}
+
+export const ErrFullNameAtLeast6Chars = new Error('Full name must be at least 6 characters long');
 export const ErrPasswordAtLeast6Chars = new Error('Password must be at least 6 characters long');
 export const ErrPasswordInvalidChars = new Error('Password can only contain letters, numbers, and special characters');
 export const ErrInvalidEmailAndPassword = new Error('Invalid email and password');
@@ -26,13 +32,14 @@ export const ErrUserInactivated = new Error('User is inactivated or banned');
 export const ErrInvalidToken = new Error('Invalid token');
 export const ErrRoleInvalid = new Error('Role is invalid');
 export const ErrWalletAddressInvalid = new Error('Wallet address is invalid');
+export const ErrUserNotFound = new Error('User not found');
+export const ErrUserCouponStatusInvalid = new Error('User coupon status is invalid');
 
 // Mô hình dữ liệu
 export const userSchema = z.object({
     id: z.string().uuid(),
     avatar: z.string().nullable().optional(),
-    firstName: z.string().min(2, { message: ErrFirstNameAtLeast2Chars.message }),
-    lastName: z.string().min(2, { message: ErrLastNameAtLeast2Chars.message }),
+    fullName: z.string().min(6, { message: ErrFullNameAtLeast6Chars.message }),
     gender: z.nativeEnum(Gender),
     password: z
         .string()
@@ -49,3 +56,29 @@ export const userSchema = z.object({
 })
 
 export interface User extends z.infer<typeof userSchema> {}
+
+export const UserCouponSchema = z.object({
+    id: z.string().uuid(),
+    userId: z.string().uuid(),
+    couponId: z.string().uuid(),
+    status: z.nativeEnum(UserCouponStatus, ErrUserCouponStatusInvalid),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+})
+
+export type UserCoupon = z.infer<typeof UserCouponSchema>;
+
+export const CreateUserCouponDTOSchema = UserCouponSchema.pick({
+    userId: true,
+    couponId: true,
+}).required();
+
+export type CreateUserCouponDTO = z.infer<typeof CreateUserCouponDTOSchema>;
+
+export const FilterUserCouponDTOSchema = UserCouponSchema.pick({
+    userId: true,
+    couponId: true,
+    status: true,
+}).partial();
+
+export type FilterUserCouponDTO = z.infer<typeof FilterUserCouponDTOSchema>;

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Paginated, PagingDTO } from "src/share";
 import { IRatingRepository } from "./rating.port";
 import prisma from "src/share/components/prisma";
-import { FilterReviewDTO } from "./rating.model";
+import { FilterReviewDTO, ProductAvgRating } from "./rating.model";
 import { Review } from "./rating.model";
 import { Review as PrismaReview } from "@prisma/client";
 
@@ -66,6 +66,29 @@ export class RatingPrismaRepository implements IRatingRepository {
         const data = await prisma.review.findMany({ where: { id: { in: ids } } });
         return data.map(this._toModdel);
     } 
+    async getAverageRatingByProduct(productId: string): Promise<ProductAvgRating> {
+        const result = await prisma.review.findMany({
+            where: { productId },
+            select: {
+                rating: true,
+            },
+        });
+
+        if (result.length === 0) {
+            return null;
+        }
+
+        const totalRating = result.reduce((sum, review) => sum + review.rating, 0);
+        const avgRating = totalRating / result.length;
+
+        const data = {
+            productId,
+            avgRating: parseFloat(avgRating.toFixed(2)),
+            totalRating: result.length,
+        } as ProductAvgRating;
+
+        return data;
+    }
     async insert(review: Review): Promise<void> {
         await prisma.review.create({ data: review });
     }

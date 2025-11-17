@@ -9,7 +9,7 @@ import { Coupon as PrismaCoupon } from "@prisma/client";
 @Injectable()
 export class CouponPrismaRepository implements ICouponRepository {
     async get(id: string): Promise<Coupon | null> {
-        const data = await prisma.coupon.findFirst({ where: { id } });
+        const data = await prisma.coupon.findUnique({ where: { id } });
         if (!data) return null;
 
         return data as Coupon;

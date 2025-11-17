@@ -17,6 +17,7 @@ import { ShippingModule } from './module/shipping/shipping.module';
 import { PaymentModule } from './module/payment/payment.module';
 import { RatingModule } from './module/rating/rating.module';
 import { TokenModule } from './module/token/token.module';
+import { FavoritesModule } from './module/favorites/favorites.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { TokenModule } from './module/token/token.module';
     PaymentModule,
     RatingModule,
     TokenModule,
+    FavoritesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

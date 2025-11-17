@@ -10,7 +10,7 @@ export interface IAddressService {
 
 export interface IAddressRepository {
     get(id: string): Promise<Address | null>;
-    list(cond: FilterAddressDTO, paging: PagingDTO): Promise<Paginated<Address>>;
+    list(cond: FilterAddressDTO, paging?: PagingDTO): Promise<Paginated<Address>>;
     listByIds(ids: string[]): Promise<Address[]>;
 
     insert(address: Address): Promise<void>;

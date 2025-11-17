@@ -8,4 +8,5 @@ export * from './rating.rpc';
 export * from './order.rpc';
 export * from './payment.rpc';
 export * from './shipping.rpc';
+export * from './favorites.rpc';
 export * from './token-introspect.rpc'

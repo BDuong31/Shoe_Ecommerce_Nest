@@ -25,11 +25,27 @@ export class AddressService implements IAddressService {
             throw AppError.from(ErrUserNotFound, 404);
         }
 
+        const addressList = await this.addressRepo.list({ userId: data.userId });
+
+        if (addressList.data.length === 0) {
+            data.isDefault = true;
+        }
+
+        if (data.isDefault) {
+            for (const addr of addressList.data) {
+                if (addr.isDefault) {
+                    await this.addressRepo.update(addr.id, { isDefault: false });
+                }
+            }
+        }
+
         const newId = v7();
 
         const newAddress = {
             id: newId,
             userId: data.userId,
+            fullName: data.fullName,
+            phone: data.phone,
             streetAdress: data.streetAdress,
             cityProvince: data.cityProvince,
             isDefault: data.isDefault ?? false,
@@ -44,6 +60,7 @@ export class AddressService implements IAddressService {
     }
     async update(addressId: string, dto: UpdateAddressDTO, requester: Requester) : Promise<boolean> {
 
+        console.log('Update address called with addressId:', addressId, 'and dto:', dto);
         const data = updateAddressDTOSchema.parse(dto);
 
         const addressExist = await this.addressRepo.get(addressId);
@@ -54,6 +71,16 @@ export class AddressService implements IAddressService {
 
         if (addressExist.userId !== requester.sub) {
             throw AppError.from(ErrUserNotFound, 403);
+        }
+
+        const addressList = await this.addressRepo.list({ userId: requester.sub });
+
+        if (data.isDefault) {
+            for (const addr of addressList.data) {
+                if (addr.isDefault) {
+                    await this.addressRepo.update(addr.id, { isDefault: false });
+                }
+            }
         }
 
         const updatedAddress = {

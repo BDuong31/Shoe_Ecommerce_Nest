@@ -2,8 +2,7 @@ import { z } from 'zod';
 import { ErrPasswordAtLeast6Chars, userSchema } from './user.model';
 
 export const userRegistrationDTOSchema = userSchema.pick({
-    firstName: true,
-    lastName: true,
+    fullName: true,
     gender: true,
     email: true,
     password: true,
@@ -20,8 +19,7 @@ export interface UserRegistrationDTO extends z.infer<typeof userRegistrationDTOS
 
 export const userUpdateDTOSchema = userSchema.pick({
     avatar: true,
-    firstName: true,
-    lastName: true,
+    fullName: true,
     gender: true,
     email: true,
     phone: true,
@@ -47,10 +45,10 @@ export const userUpdateProfileDTOSchema = userUpdateDTOSchema.omit({
 }).partial();
 
 export const userCondDTOSchema = userSchema.pick({
-    firstName: true,
-    lastName: true,
+    fullName: true,
     email: true,
     phone: true,
+    walletAddress: true,
     role: true,
     status: true,
 }).partial();

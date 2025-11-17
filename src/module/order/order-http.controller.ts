@@ -9,7 +9,7 @@ import { CreateOrderCouponDTO, CreateOrderDTO, CreateOrderItemDTO, FilterOrderDT
 export class OrderHttpController {
     constructor(
         @Inject(ORDER_SERVICE) private readonly service: IOrderService,
-        @Inject(ORDER_REPOSITORY) private readonly repo: IOrderRepository,
+        @Inject(ORDER_REPOSITORY) private readonly orderRepo: IOrderRepository,
         @Inject(ORDER_ITEM_SERVICE) private readonly orderItemService: IOrderItemService,
         @Inject(ORDER_ITEM_REPOSITORY) private readonly orderItemRepo: IOrderItemRepository,
     ) {}
@@ -28,7 +28,7 @@ export class OrderHttpController {
     async listOrder(@Request() req: ReqWithRequester, @Query() dto: FilterOrderDTO, @Query() paging: PagingDTO){
         paging = pagingDTOSchema.parse(paging);
         dto = FilterOrderSchema.parse(dto);
-        const data = await this.repo.list(dto, paging, req.requester);
+        const data = await this.orderRepo.list(dto, paging, req.requester);
         return paginatedResponse(data, dto);
     }
 
@@ -36,7 +36,7 @@ export class OrderHttpController {
     @UseGuards(RemoteAuthGuard)
     @HttpCode(HttpStatus.OK)
     async getOrder(@Request() req: ReqWithRequester, @Param('id') id: string){
-        const data = await this.repo.get(id);
+        const data = await this.orderRepo.get(id);
         return { data };
     }
 
@@ -58,17 +58,16 @@ export class OrderHttpController {
         return { data };
     }
 
+    @Post('rpc/list-by-ids')
+    @HttpCode(HttpStatus.OK)
+    async listOrderByIds(@Body('ids') ids: string[]){
+        const data = await this.orderRepo.listByIds(ids);
+        return { data: data };
+    }
     @Post('rpc/:id')
     @HttpCode(HttpStatus.OK)
     async getOrderById(@Request() req: ReqWithRequester, @Param('id') id: string){
-        const data = await this.repo.get(id);
-        return { data };
-    }
-
-    @Post('rpc/list-by-ids')
-    @HttpCode(HttpStatus.OK)
-    async listOrderByIds(@Request() req: ReqWithRequester, @Body() dto: { ids: string[] }){
-        const data = await this.repo.listByIds(dto.ids);
+        const data = await this.orderRepo.get(id);
         return { data };
     }
 }
@@ -130,8 +129,8 @@ export class OrderItemHttpController {
 
     @Post('rpc/list-by-ids')
     @HttpCode(HttpStatus.OK)
-    async listOrderItemsByIds(@Request() req: ReqWithRequester, @Body() dto: { ids: string[] }){
-        const data = await this.repo.listByIds(dto.ids);
+    async listOrderItemsByIds(@Body('ids') ids: string[]){
+        const data = await this.repo.listByIds(ids);
         return { data };
     }
 }

@@ -21,7 +21,7 @@ export const OrderSchema = z.object({
     totalAmount: z.number().nonnegative(),
     status: z.nativeEnum(OrderStatus),
     userId: z.string().uuid(),
-    shippingAddressId: z.string().uuid(),
+    shippingAddressId: z.string(),
     createdAt: z.date(),
     updatedAt: z.date()
 });

@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { User as UserPrisma } from "@prisma/client";
+import { User as UserPrisma, UserCoupon as UserCouponPrisma } from "@prisma/client";
 import { UserRole } from "src/share";
 import prisma from "src/share/components/prisma";
 import { UserCondDTO, UserUpdateDTO } from "./user.dto";
-import { Status, User } from "./user.model";
-import { IUserRepository } from "./user.port";
+import { Status, User, UserCoupon, UserCouponStatus } from "./user.model";
+import { IUserCouponRepository, IUserRepository } from "./user.port";
 
 // Lớp UserPrismaRepository cung cấp các phương thức truy vấn dữ liệu từ Prisma
 @Injectable()
@@ -28,6 +28,12 @@ export class UserPrismaRepository implements IUserRepository {
     return this._toModel(data);
   }
 
+  // Lấy danh sách người dùng theo điều kiện
+  async listByCond(cond: UserCondDTO): Promise<User[]> {
+    const data = await prisma.user.findMany({ where: cond });
+    return data.map(this._toModel);
+  }
+
   async insert(user: User): Promise<void> {
     await prisma.user.create({ data: user });
   }
@@ -39,8 +45,9 @@ export class UserPrismaRepository implements IUserRepository {
   }
 
   // Cập nhật thông tin người dùng
-  async update(id: string, dto: UserUpdateDTO): Promise<void> {
-    await prisma.user.update({ where: { id }, data: dto });
+  async update(id: string, dto: UserUpdateDTO): Promise<boolean> {
+    const result = await prisma.user.update({ where: { id }, data: dto });
+    return !!result;
   }
 
   // Xóa người dùng
@@ -53,5 +60,42 @@ export class UserPrismaRepository implements IUserRepository {
   // Chuyển đổi dữ liệu từ Prisma sang User
   private _toModel(data: UserPrisma): User {
     return { ...data, role: data.role as UserRole} as User
+  }
+}
+
+@Injectable()
+export class UserCouponPrismaRepository implements IUserCouponRepository {
+    async get(id: string): Promise<UserCoupon | null> {
+        const data = await prisma.userCoupon.findFirst({ where: { id } });
+        if (!data) return null;
+        return this._toModel(data);
+    }
+
+    async listByUserId(userId: string): Promise<UserCoupon[]> {
+        const data = await prisma.userCoupon.findMany({ where: { userId } });
+        return data.map(this._toModel);
+    }
+
+    async listByIds(ids: string[]): Promise<UserCoupon[]> {
+        const data = await prisma.userCoupon.findMany({ where: { id: { in: ids } } });
+        return data.map(this._toModel);
+    }
+
+    async insert(dto: UserCoupon): Promise<void> {
+        await prisma.userCoupon.create({ data: dto });
+    }
+
+    async update(id: string, dto: Partial<UserCoupon>): Promise<void> {
+        await prisma.userCoupon.update({
+            where: { id },
+            data: dto,
+        });
+    }
+
+    async delete(id: string): Promise<void> {
+        await prisma.userCoupon.delete({ where: { id } });
+    } 
+    private _toModel(data: UserCouponPrisma): UserCoupon {
+    return { ...data, status: data.status as UserCouponStatus} as UserCoupon
   }
 }

@@ -71,6 +71,32 @@ export class VariationPrismaRepository implements IVariationRepository {
         return data.map(this._toModdel);
     }
 
+    async listColors(): Promise<string[]> {
+        const colors = await prisma.productVariant.findMany({
+            distinct: ['color'],
+            select: {
+                color: true,
+            },
+        });
+
+        console.log('colors', colors);
+
+        return colors.map(c => c.color);
+    }
+
+    async listSizes(): Promise<number[]> {
+        const sizes = await prisma.productVariant.findMany({
+            distinct: ['size'],
+            select: {
+                size: true,
+            },
+        });
+
+        console.log('sizes', sizes);
+
+        return sizes.map(s => s.size);
+    }
+
     async insert(variation: Variation): Promise<void> {
         await prisma.productVariant.create({ data: variation });
     }

@@ -1,8 +1,8 @@
 import { Module, Provider } from "@nestjs/common";
 import { RedisClient } from "./components";
 import { config } from "./config";
-import { ADDRESS_RPC, BRAND_RPC, CATEGORY_RPC, COUPON_RPC, EVENT_PUBLISHER, ORDER_RPC, PAYMENT_RPC, PRODUCT_RPC, RATING_RPC, SHIPPING_RPC, TOKEN_INTROSPECTOR, USER_RPC, VARIANT_RPC,  } from "./di-token";
-import { TokenIntrospectRPCClient, UserRPCClient, AddressRPCClient, ProductRPCClient, VariantRPCClient, RatingRPCClient, OrderRPCClient, PaymentRPCClient, ShippingRPCClient, BrandRPCClient, CategoryRPCClient } from "./rpc";
+import { ADDRESS_RPC, BRAND_RPC, CATEGORY_RPC, COUPON_RPC, EVENT_PUBLISHER, FAVORITES_RPC, ORDER_RPC, PAYMENT_RPC, PRODUCT_RPC, RATING_RPC, SHIPPING_RPC, TOKEN_INTROSPECTOR, USER_RPC, VARIANT_RPC,  } from "./di-token";
+import { TokenIntrospectRPCClient, UserRPCClient, AddressRPCClient, ProductRPCClient, VariantRPCClient, RatingRPCClient, OrderRPCClient, PaymentRPCClient, ShippingRPCClient, BrandRPCClient, CategoryRPCClient, FavoriteRPCClient } from "./rpc";
 import { CouponRPCClient } from "./rpc/coupon.rpc";
 
 // Khởi tạo client cho việc kiểm tra token
@@ -80,6 +80,11 @@ const shippingRPC: Provider = {
   useValue: shippingRPCClient,
 };
 
+const favoriteRPCClient = new FavoriteRPCClient(config.rpc.favoriteServiceURL);
+const favoriteRPC: Provider = {
+  provide: FAVORITES_RPC,
+  useValue: favoriteRPCClient,
+};
 // Khởi tạo client cho việc giao tiếp với Redis
 const redisClient: Provider = {
   provide: EVENT_PUBLISHER,
@@ -92,8 +97,8 @@ const redisClient: Provider = {
 
 // Tạo module chia sẻ
 @Module({
-  providers: [tokenIntrospector, userRPC, addressRPC, brandRPC, categoryRPC, productRPC, variantRPC, couponRPC, ratingRPC, orderRPC, paymentRPC, shippingRPC, redisClient],
-  exports: [tokenIntrospector, userRPC, addressRPC, brandRPC, categoryRPC, productRPC, variantRPC, couponRPC, ratingRPC, orderRPC, paymentRPC, shippingRPC, redisClient]
+  providers: [tokenIntrospector, userRPC, addressRPC, brandRPC, categoryRPC, productRPC, variantRPC, couponRPC, ratingRPC, orderRPC, paymentRPC, shippingRPC, favoriteRPC, redisClient],
+  exports: [tokenIntrospector, userRPC, addressRPC, brandRPC, categoryRPC, productRPC, variantRPC, couponRPC, ratingRPC, orderRPC, paymentRPC, shippingRPC, favoriteRPC, redisClient]
 })
 
 export class ShareModule { }

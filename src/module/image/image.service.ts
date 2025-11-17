@@ -6,7 +6,8 @@ import {
     createImageDTOSchema, 
     UpdateImageDTO, 
     updateImageDTOSchema,
-    ErrImageNotFound 
+    ErrImageNotFound, 
+    ImageType
 } from "./image.model";
 import { AppError } from "src/share";
 import { v7 } from "uuid";
@@ -48,7 +49,7 @@ export class ImageService implements IImageService, OnModuleInit {
         try {
             const fileUri = this.fileToDataUri(file);
             uploadResult = await cloudinary.uploader.upload(fileUri, {
-                folder: `ecommerce/products/${data.productId}`, 
+                folder: `ecommerce/products/${data.refId}`, 
             });
         } catch (error) {
             console.error("Cloudinary Upload Error:", error);
@@ -61,7 +62,7 @@ export class ImageService implements IImageService, OnModuleInit {
             
             if (data.isMain) {
                 const existingMainImage = await tx.image.findFirst({
-                    where: { productId: data.productId, isMain: true }
+                    where: { refId: data.refId, isMain: true }
                 });
 
                 if (existingMainImage) {
@@ -77,7 +78,8 @@ export class ImageService implements IImageService, OnModuleInit {
                 url: uploadResult.secure_url,
                 isMain: data.isMain,
                 publicId: uploadResult.public_id,
-                productId: data.productId,
+                refId: data.refId,
+                type: data.type as ImageType,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             };
@@ -100,7 +102,7 @@ export class ImageService implements IImageService, OnModuleInit {
         if (data.isMain === true) {
              await this.prisma.$transaction(async (tx) => {
                 await tx.image.updateMany({
-                    where: { productId: imageExist.productId, isMain: true },
+                    where: { refId: imageExist.refId, isMain: true },
                     data: { isMain: false },
                 });
 
@@ -142,7 +144,7 @@ export class ImageService implements IImageService, OnModuleInit {
             
             if (imageExist.isMain) {
                 const nextMainCandidate = await tx.image.findFirst({
-                    where: { productId: imageExist.productId },
+                    where: { refId: imageExist.refId },
                     orderBy: { createdAt: 'asc' }, 
                     take: 1,
                 });

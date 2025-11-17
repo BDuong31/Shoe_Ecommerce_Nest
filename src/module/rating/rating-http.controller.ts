@@ -90,4 +90,11 @@ export class RatingHttpController {
         const data = await this.repo.listByIds(dto.ids);
         return { data };
     }
+
+    @Get('rpc/average-rating/:productId')
+    @HttpCode(HttpStatus.OK)
+    async getAverageRating(@Param('productId') productId: string){
+        const data = await this.repo.getAverageRatingByProduct(productId);
+        return { data };
+    }
 }  

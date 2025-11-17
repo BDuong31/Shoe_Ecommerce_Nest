@@ -26,8 +26,14 @@ export class CouponService implements ICouponService {
         const newCoupon = {
             id: newId,
             code: data.code,
+            name: data.name,
+            description: data.description,
             type: data.type,
             discountValue: data.discountValue,
+            minSpend: data.minSpend,
+            maxDiscount: data.maxDiscount,
+            totalUsageLimit: data.totalUsageLimit,
+            currentUsageCount: data.currentUsageCount,
             expiryDate: data.expiryDate,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -39,7 +45,20 @@ export class CouponService implements ICouponService {
     }
 
     async update(couponId: string, dto: CreateCouponDTO): Promise<boolean> {
-        const data = updateCouponDTOSchema.parse(dto);
+        const dtoData: CreateCouponDTO = {
+            code: dto.code,
+            name: dto.name,
+            description: dto.description,
+            type: dto.type,
+            discountValue: dto.discountValue,
+            minSpend: dto.minSpend,
+            maxDiscount: dto.maxDiscount,
+            totalUsageLimit: dto.totalUsageLimit,
+            currentUsageCount: dto.currentUsageCount,
+            expiryDate: new Date(dto.expiryDate),
+        }
+
+        const data = updateCouponDTOSchema.parse(dtoData);
 
         const couponExist = await this.couponRepo.get(couponId);
 

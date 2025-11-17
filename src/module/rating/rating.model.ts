@@ -39,3 +39,11 @@ export const FilterReviewDTOSchema = ReviewSchema.partial().pick({
 });
 
 export type FilterReviewDTO = z.infer<typeof FilterReviewDTOSchema>;
+
+export const ProdcutAvgRatingSchema = z.object({
+    productId: z.string().uuid(),
+    avgRating: z.number(),
+    totalRating: z.number(),
+})
+
+export type ProductAvgRating = z.infer<typeof ProdcutAvgRatingSchema>;    

@@ -26,12 +26,12 @@ export class CartPrismaRepository implements ICartRepository {
         await prisma.cart.delete({ where: { userId: userId } });
     }
 
-  async increaseCount(userId: string, field: string, step: number): Promise<void> {
-    await prisma.cart.update({ where: { userId: userId }, data: { [field]: { increment: step } } });
+  async increaseCount(id: string, field: string, step: number): Promise<void> {
+    await prisma.cart.update({ where: { id: id }, data: { [field]: { increment: step } } });
   }
 
-  async decreaseCount(userId: string, field: string, step: number): Promise<void> {
-    await prisma.cart.update({ where: { userId: userId }, data: { [field]: { decrement: step } } });
+  async decreaseCount(id: string, field: string, step: number): Promise<void> {
+    await prisma.cart.update({ where: { id: id }, data: { [field]: { decrement: step } } });
   }
 
   private _toModel(data: PrismaCart): Cart {

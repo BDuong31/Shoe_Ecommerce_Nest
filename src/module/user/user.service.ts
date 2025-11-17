@@ -1,20 +1,38 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, BadRequestException } from "@nestjs/common";
 import * as bcrypt from 'bcrypt';
-import { AppError, ErrForbidden, ErrNotFound, ITokenProvider, Requester, TokenPayload, UserRole } from "src/share";
+import { AppError, ErrForbidden, ErrInvalidRequest, ErrNotFound, IPublicCouponRpc, IPublicUserRpc, ITokenProvider, Requester, TokenPayload, UserRole } from "src/share";
 import { v7 } from "uuid";
-import { TOKEN_PROVIDER, USER_REPOSITORY } from "./user.di-token";
+import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
+import { TOKEN_PROVIDER, USER_COUPON_REPOSITORY, USER_REPOSITORY } from "./user.di-token";
 import { UserLoginDTO, userLoginDTOSchema, UserRegistrationDTO, userRegistrationDTOSchema, UserUpdateDTO, userUpdateDTOSchema, UserChangePasswordDTO, userChangePasswordDTOSchema } from "./user.dto";
-import { ErrInvalidToken, ErrInvalidEmailAndPassword, ErrUserInactivated, ErrEmailInvalid, Status, User, ErrPhoneInvalid, ErrWalletAddressInvalid } from "./user.model";
-import { IUserRepository, IUserService } from "./user.port";
+import { ErrInvalidToken, ErrInvalidEmailAndPassword, ErrUserInactivated, ErrEmailInvalid, Status, User, ErrPhoneInvalid, ErrWalletAddressInvalid, UserCoupon, UserCouponStatus } from "./user.model";
+import { IUserCouponRepository, IUserCouponService, IUserRepository, IUserService } from "./user.port";
 import * as path from 'path';
 import { boolean, string } from "zod";
+import { COUPON_RPC, USER_RPC } from "src/share/di-token";
+import { create } from "domain";
 // Lớp UserService cung cấp các phương thức xử lý logic liên quan đến người dùng
 @Injectable()
 export class UserService implements IUserService {
   constructor(
     @Inject(USER_REPOSITORY) private readonly userRepo: IUserRepository, 
     @Inject(TOKEN_PROVIDER) private readonly tokenProvider: ITokenProvider,
-  ) { }
+  ) { 
+    cloudinary.config(process.env.CLOUDINARY_URL || '');
+  }
+
+  onModuleInit() {
+    if (!process.env.CLOUDINARY_URL) {
+      console.warn("CLOUDINARY_URL is not set. Cloudinary operations will likely fail.");
+    }
+  }
+
+  private fileToDataUri(file: Express.Multer.File): string {
+    if (!file.buffer) {
+      throw new BadRequestException("File buffer is missing. Check Multer setup.");
+    }
+    return `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+}
 
   // Phương thức đăng ký người dùng mới
   async register(dto: UserRegistrationDTO): Promise<string> {
@@ -33,8 +51,7 @@ export class UserService implements IUserService {
     const newUser: User = {
         id: newId,
         avatar: null,
-        firstName: data.firstName,
-        lastName: data.lastName,
+        fullName: data.fullName,
         gender: data.gender, 
         password: hashPassword,
         salt: salt,
@@ -123,9 +140,11 @@ export class UserService implements IUserService {
   }
 
   // Phương thức cập nhật thông tin người dùng
-  async update(requester: Requester, userId: string, dto: UserUpdateDTO): Promise<void> {
+  async update(requester: Requester, userId: string, dto: UserUpdateDTO, file?: Express.Multer.File): Promise<Omit<User, 'password' | 'salt'>> {
     // 2. Kiểm tra dữ liệu đầu vào
     const data = userUpdateDTOSchema.parse(dto);
+
+    let uploadResult: UploadApiResponse;
 
     // 3. Kiểm tra người dùng
     const user = await this.userRepo.get(userId);
@@ -133,15 +152,66 @@ export class UserService implements IUserService {
       throw AppError.from(ErrNotFound, 400);
     }
 
-    if (user.phone !== data.phone) {
-      throw AppError.from(ErrPhoneInvalid, 400);
+    // 4. Kiểm tra số điện thoại
+    if(user.phone !== data.phone) { 
+      const phoneUsers = await this.userRepo.listByCond({ phone: data.phone || '' });
+      let lengthPhoneUser = phoneUsers.length;
+
+      if (lengthPhoneUser > 3) {
+        throw AppError.from(ErrPhoneInvalid, 400);
+      }
     }
 
-    if (user.walletAddress !== data.walletAddress) {
-      throw AppError.from(ErrWalletAddressInvalid, 400);
+    if(user.email !== data.email) {
+      const emailUser = await this.userRepo.findByCond({ email: data.email || '' });
+      if (emailUser) {
+        throw AppError.from(ErrEmailInvalid, 400);
+      }
     }
-    // 4. Cập nhật thông tin người dùng
-    await this.userRepo.update(userId, data);
+
+    // 5. Kiểm tra địa chỉ ví
+    if (user.walletAddress !== data.walletAddress && data.walletAddress !== undefined) {
+      console.log("Checking wallet address:", data.walletAddress);
+      console.log("Current user wallet address:", user.walletAddress);
+      const walletUsers = await this.userRepo.findByCond({ walletAddress: data.walletAddress || '' });
+      if (walletUsers) {
+        throw AppError.from(ErrWalletAddressInvalid, 400);
+      }
+    }
+
+    // 6. Xử lý ảnh đại diện nếu có
+    if (file) {
+      console.log("anh");
+      try {
+        const fileUri = this.fileToDataUri(file);
+        uploadResult = await cloudinary.uploader.upload(fileUri, {
+            folder: `ecommerce/avatars/${userId}`, 
+        });
+      } catch (error) {
+        console.error("Cloudinary Upload Error:", error);
+        throw new BadRequestException('Image upload failed to Cloudinary.');
+      }
+
+      if (uploadResult && uploadResult.secure_url) {
+        data.avatar = uploadResult.secure_url;
+      }
+    }
+
+    const updatedUsers = await this.userRepo.update(userId, data);
+
+    if (!updatedUsers) {
+      throw AppError.from(ErrNotFound, 400);
+    }
+
+
+    const updatedUser = await this.userRepo.get(userId);
+    if (!updatedUser) {
+      throw AppError.from(ErrNotFound, 400);
+    }
+
+
+    const { password, salt, ...rest } = updatedUser;
+    return rest;
   }
 
   async updatePassword(requester: Requester, userId: string, dto: UserChangePasswordDTO): Promise<void> {
@@ -182,5 +252,65 @@ export class UserService implements IUserService {
 
     // 2. Xóa người dùng
     await this.userRepo.delete(userId, true);
+  }
+}
+
+@Injectable()
+export class UserCouponService implements IUserCouponService {
+  constructor(
+    @Inject(USER_COUPON_REPOSITORY) private readonly userCouponRepo: IUserCouponRepository,
+    @Inject(USER_RPC) private readonly userRpc: IPublicUserRpc,
+    @Inject(COUPON_RPC) private readonly couponRpc: IPublicCouponRpc,
+  ){}
+
+  async assignCouponToUser(userId: string, couponId: string): Promise<string> {
+    const user = await this.userRpc.findById(userId);
+    
+    console.log('user ', user);
+    if (!user) {
+      throw AppError.from(ErrNotFound, 404).withLog(`User with id ${userId} not found`);
+    }
+
+    const coupon = await this.couponRpc.findById(couponId);
+
+    console.log('coupon ', coupon);
+    if (!coupon) {
+      throw AppError.from(ErrNotFound, 404).withLog(`Coupon with id ${couponId} not found`);
+    }
+
+    const newId = v7();
+
+    const newUserCoupon: UserCoupon = {
+      id: newId,
+      userId: userId,
+      couponId: couponId,
+      status: UserCouponStatus.AVAILABLE,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+
+    await this.userCouponRepo.insert(newUserCoupon);
+
+    return newId;
+  }
+
+  async listUserCoupons(userId: string): Promise<UserCoupon[]> {
+    const userCoupons =  await this.userCouponRepo.listByUserId(userId);
+    return userCoupons;
+  }
+
+  async useUserCoupon(userId: string, couponId: string): Promise<void> {
+    const userCoupons =  await this.userCouponRepo.listByUserId(userId);
+    const userCoupon = userCoupons.find(uc => uc.couponId === couponId);
+
+    if (!userCoupon) {
+      throw AppError.from(ErrNotFound, 404).withLog(`UserCoupon with couponId ${couponId} not found for user ${userId}`);
+    }
+
+    if (userCoupon.status !== UserCouponStatus.AVAILABLE) {
+      throw AppError.from(ErrInvalidRequest, 400).withLog(`UserCoupon with couponId ${couponId} is not available`);
+    }
+
+    await this.userCouponRepo.update(userCoupon.id, { status: UserCouponStatus.USED });
   }
 }

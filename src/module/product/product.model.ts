@@ -1,5 +1,6 @@
-import { PublicBrand, publicBrandSchema, PublicCategory, publicCategorySchema } from 'src/share';
+import { PublicBrand, publicBrandSchema, PublicCategory, publicCategorySchema, PublicRating } from 'src/share';
 import { z } from 'zod';
+import { ProductAvgRating } from '../rating/rating.model';
 
 export const ErrProductNameRequired = new Error('Product name is required');
 export const ErrProductPriceInvalid = new Error('Product price is invalid');
@@ -23,7 +24,7 @@ export const productSchema = z.object({
     updatedAt: z.date(),
 })
 
-export type Product =  z.infer<typeof productSchema> & { brand?: PublicBrand, category?: PublicCategory }
+export type Product =  z.infer<typeof productSchema> & { brand?: PublicBrand, category?: PublicCategory, averageRating?: PublicRating, isFavorited?: boolean };
 
 export const createProductDTOSchema = productSchema.pick({
     productName: true,

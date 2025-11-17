@@ -1,4 +1,4 @@
-import { AppEvent, PublicAddress, PublicBrand, PublicCategory, PublicCoupon, PublicOrder, PublicOrderItem, PublicPayment, PublicProduct, PublicRating, PublicShipping, PublicUser, PublicVariant } from "./data-model";
+import { AppEvent, PublicAddress, PublicBrand, PublicCategory, PublicCoupon, PublicOrder, PublicOrderCoupon, PublicOrderItem, PublicPayment, PublicProduct, PublicRating, PublicShipping, PublicUser, PublicVariant } from "./data-model";
 export interface TokenPayload {
   sub: string;
   role: UserRole;
@@ -77,6 +77,7 @@ export interface IPublicCouponRpc {
 export interface IPublicOrderRpc {
   getOrderStatus(id: string): Promise<PublicOrder | null>;
   getOrderItems(id: string): Promise<Array<PublicOrderItem> | null>;
+  getOrderCoupon(id: string): Promise<PublicOrderCoupon | null>;
 }
 
 export interface IPublicPaymentRpc {
@@ -87,6 +88,9 @@ export interface IPublicShippingRpc {
   getShippingStatus(id: string): Promise<PublicShipping | null>;
 }
 
+export interface IPublicFavoriteRpc {
+  isProductFavoritedByUser(productId: string, userId: string): Promise<boolean>;
+}
 export type EventHandler = (msg: string) => void;
 
 export interface IEventPublisher {

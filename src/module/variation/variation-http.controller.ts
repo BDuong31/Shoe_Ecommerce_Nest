@@ -47,6 +47,23 @@ export class VariationHttpController {
         return paginatedResponse(result, dto);
     }
 
+    @Get('color')
+    @HttpCode(HttpStatus.OK)
+    async listColors(@Request() req: ReqWithRequester, @Query() paging: PagingDTO){
+        console.log(paging)
+        console.log('listColors called');
+        const data = await this.repo.listColors();
+        return { data };
+    }
+
+    @Get('size')
+    @HttpCode(HttpStatus.OK)
+    async listSizes(){
+        console.log('listSizes called');
+        const data = await this.repo.listSizes();
+        return { data };
+    }
+
     @Get(':id')
     @HttpCode(HttpStatus.OK)
     async getVariation(@Param('id') id: string){

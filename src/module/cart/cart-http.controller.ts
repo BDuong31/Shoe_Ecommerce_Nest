@@ -73,8 +73,6 @@ export class CartItemHttpController {
     @UseGuards(RemoteAuthGuard)
     @HttpCode(HttpStatus.OK)
     async listCartItems(@Request() req: ReqWithRequester, @Query() dto: FilterCartItemDTO, @Query() paging: PagingDTO){
-        console.log('listCartItems dto', dto.cartId);
-
         paging = pagingDTOSchema.parse(paging);
         dto = filterCartItemDTOSchema.parse(dto);
 

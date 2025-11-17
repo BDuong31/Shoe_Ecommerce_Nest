@@ -15,7 +15,7 @@ export class ImagePrismaRepository implements IImageRepository {
     }
 
     async list(cond: FilterImageDTO, paging: PagingDTO): Promise<Paginated<Image>> {
-        const { isMain, productId, ...rest } = cond;
+        const { isMain, refId, ...rest } = cond;
 
         let where = {
             ...rest,
@@ -26,10 +26,10 @@ export class ImagePrismaRepository implements IImageRepository {
                 isMain: isMain,
             } as FilterImageDTO
         }
-        if (productId) {
+        if (refId) {
             where = {
                 ...where,
-                productId: productId,
+                refId: refId,
             } as FilterImageDTO
         }
 

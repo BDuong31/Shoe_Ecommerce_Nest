@@ -31,7 +31,12 @@ export class AddressHttpController {
     @HttpCode(HttpStatus.OK)
     async listAddress(@Request() req: ReqWithRequester, @Query() dto: FilterAddressDTO, @Query() paging: PagingDTO){
         paging = pagingDTOSchema.parse(paging);
-        dto = filterAddressDTOSchema.parse(dto);
+        const data: FilterAddressDTO ={
+            userId: dto.userId, 
+            isDefault: dto.isDefault ? true : dto.isDefault === false ? false : undefined       
+        }
+        console.log('Filter DTO:', data);
+        dto = filterAddressDTOSchema.parse(data);
 
         const result = await this.repo.list(dto, paging);
 
@@ -41,7 +46,7 @@ export class AddressHttpController {
     @Get(':id')
     @UseGuards(RemoteAuthGuard)
     @HttpCode(HttpStatus.OK)
-    async getAddress(@Request() req: ReqWithRequester, @Query('id') id: string){
+    async getAddress(@Request() req: ReqWithRequester, @Param('id') id: string){
         const data = await this.repo.get(id);
         return { data };
     }
@@ -49,8 +54,9 @@ export class AddressHttpController {
     @Patch(':id')
     @UseGuards(RemoteAuthGuard)
     @HttpCode(HttpStatus.OK)
-    async updateAddress(@Request() req: ReqWithRequester, @Query('id') id: string, @Body() dto: UpdateAddressDTO){
+    async updateAddress(@Request() req: ReqWithRequester, @Param('id') id: string, @Body() dto: UpdateAddressDTO){
         const { requester } = req;
+        console.log(id);
         const result = await this.service.update(id, dto, requester);
         return { data: result };
     }
@@ -58,7 +64,7 @@ export class AddressHttpController {
     @Delete(':id')
     @UseGuards(RemoteAuthGuard)
     @HttpCode(HttpStatus.OK)
-    async deleteAddress(@Request() req: ReqWithRequester, @Query('id') id: string){
+    async deleteAddress(@Request() req: ReqWithRequester, @Param('id') id: string){
         const { requester } = req;
         const result = await this.service.delete(id, requester);
         return { data: result };

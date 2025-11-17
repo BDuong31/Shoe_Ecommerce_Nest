@@ -38,21 +38,30 @@ export class AddressPrismaRepository implements IAddressRepository {
 
         const total = await prisma.address.count({ where });
 
-        const skip = (paging.page - 1) * paging.limit;
+        if (paging) {
+            const skip = (paging.page - 1) * paging.limit;
 
-        const result = await prisma.address.findMany({
-            where,
-            skip,
-            take: paging.limit,
-            orderBy: {
-                id: 'desc',
-            },
-        });
+            const result = await prisma.address.findMany({
+                where,
+                skip,
+                take: paging.limit,
+                orderBy: {
+                    isDefault: 'desc',
+                },
+            });
+
+            return {
+                data: result.map(this._toModel),
+                paging,
+                total
+            };
+        }
+        const result = await prisma.address.findMany({ where });
 
         return {
             data: result.map(this._toModel),
-            paging,
-            total
+            paging: { page: 1, limit: total },
+            total,
         };
     }
     async listByIds(ids: string[]): Promise<Address[]> {

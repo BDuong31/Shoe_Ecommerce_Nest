@@ -26,10 +26,11 @@ export const config = {
         couponServiceURL: process.env.COUPON_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ coupon
         orderServiceURL: process.env.ORDER_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ đơn hàng
         shippingServiceURL: process.env.SHIPPING_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ vận chuyển
+        favoriteServiceURL: process.env.FAVORITE_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ yêu thích
         paymentServiceURL: process.env.PAYMENT_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ thanh toán
         transactionServiceURL: process.env.TRANSACTION_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ giao dịch
         reviewServiceURL: process.env.REVIEW_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ đánh giá
-        productAuthenticationServiceURL: process.env.PRODUCT_AUTHENTICATION_SERVICE_URL || `http://localhost:${port}/v1/`, // URL của dịch vụ xác thực sản phẩm
+        productAuthenticationServiceURL: process.env.PRODUCT_AUTHENTICATION_SERVICE_URL || `http://localhost:${port}/v1`, // URL của dịch vụ xác thực sản phẩm
     },
 
     redis: {

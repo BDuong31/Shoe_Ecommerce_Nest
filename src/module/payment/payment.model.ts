@@ -14,6 +14,7 @@ export const ErrPaymentMethodNotSupported = new Error('ErrPaymentMethodNotSuppor
 export const ErrPaymentOrderMismatch = new Error('ErrPaymentOrderMismatch');
 export const ErrPaymentUnauthorized = new Error('ErrPaymentUnauthorized');
 
+
 export const PaymentsSchema = z.object({
     id: z.string().uuid(),
     method: z.string().min(1).max(50),
@@ -42,12 +43,33 @@ export const UpdatePaymentSchema = PaymentsSchema.partial().pick({
 
 export type UpdatePaymentDTO = z.infer<typeof UpdatePaymentSchema>;
 
-export const FilterPaymentSchema = z.object({
+export const FilterPaymentSchemaTable = z.object({
+    orderId: z.string().uuid().optional(),
     method: z.string().min(1).max(50).optional(),
     status: z.nativeEnum(TransactionStatus).optional(),
     minAmount: z.number().nonnegative().optional(),
     maxAmount: z.number().nonnegative().optional(),
 })
 
+export const FilterPaymentSchema = FilterPaymentSchemaTable.partial().pick({
+    orderId: true,
+    method: true,
+    status: true,
+    minAmount: true,
+    maxAmount: true,
+})
+
 export type FilterPaymentDTO = z.infer<typeof FilterPaymentSchema>;
 
+export const InitiatePaymentSchemaTable = z.object({
+    paymentId: z.string().uuid(),
+    method: z.string().min(1).max(50),
+    methodChild: z.string().min(1).max(50).optional(), 
+});
+
+export const InitiatePaymentSchema = InitiatePaymentSchemaTable.partial().pick({
+    paymentId: true,
+    method: true,
+    methodChild: true,
+}); 
+export type InitiatePaymentDTO = z.infer<typeof InitiatePaymentSchema>;

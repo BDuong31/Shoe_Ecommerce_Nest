@@ -14,12 +14,7 @@ export class OrderService implements IOrderService {
     ) {}
     async create(dto: CreateOrderDTO, requester: Requester): Promise<string> {
         const userId = requester.sub;
-
-        const shippingInfo = await this.shippingRpc.findById(dto.shippingAddressId);
-        if (!shippingInfo) {
-            throw AppError.from(ErrShippingAddressIdRequired, 404);
-        }
-
+        
         const newId = v7();
 
         const newOrder = {

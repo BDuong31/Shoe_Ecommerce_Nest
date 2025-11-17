@@ -1,9 +1,9 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Inject, NotFoundException, Param, Patch, Post, Query, Request, UseGuards } from "@nestjs/common";
 import { PRODUCT_REPOSITORY, PRODUCT_SERVICE } from "./product.di-token";
-import { CATEGORY_RPC, BRAND_RPC } from "src/share/di-token";
+import { CATEGORY_RPC, BRAND_RPC, RATING_RPC, FAVORITES_RPC } from "src/share/di-token";
 import { IProductRepository, IProductService } from "./product.port";
 import { RemoteAuthGuard, Roles, RolesGuard } from "src/share/guard";
-import { IPublicBrandRpc, IPublicCategoryRpc, paginatedResponse, PagingDTO, pagingDTOSchema, PublicBrand, PublicCategory, ReqWithRequester, UserRole } from "src/share";
+import { IPublicBrandRpc, IPublicCategoryRpc, IPublicFavoriteRpc, IPublicRatingRpc, paginatedResponse, PagingDTO, pagingDTOSchema, PublicBrand, PublicCategory, PublicRating, ReqWithRequester, UserRole } from "src/share";
 import { CreateProductDTO, FilterProductDTO, filterProductDTOSchema, Product } from "./product.model";
 import { NotFoundError } from "rxjs";
 
@@ -14,6 +14,8 @@ export class ProductHttpController {
         @Inject(PRODUCT_REPOSITORY) private readonly repo: IProductRepository,
         @Inject(BRAND_RPC) private readonly brandRpc: IPublicBrandRpc,
         @Inject(CATEGORY_RPC) private readonly categoryRpc: IPublicCategoryRpc,
+        @Inject(RATING_RPC) private readonly ratingRpc: IPublicRatingRpc,
+        @Inject(FAVORITES_RPC) private readonly favoriteRpc: IPublicFavoriteRpc,
     ) {}
 
     @Post()
@@ -35,9 +37,16 @@ export class ProductHttpController {
 
         const brandIds = result.data.map(item => item.brandId);
         const categoryIds = result.data.map(item => item.categoryId);
+        const productIds = result.data.map(item => item.id);
 
         const brands = await this.brandRpc.findByIds([...new Set(brandIds)]);
         const categories = await this.categoryRpc.findByIds([...new Set(categoryIds)]);
+        const averageRatings: PublicRating[] = [];
+        
+        productIds.map(async (productId) => {
+            const ratings = await this.ratingRpc.getProductAvgRating(productId);
+            averageRatings[productId] = ratings;
+        });
 
         const brandMap: Record<string, PublicBrand> = {};
         const categoriesMap: Record<string, PublicCategory> = {};
@@ -53,8 +62,11 @@ export class ProductHttpController {
         result.data = result.data.map((item) =>{
             const brand = brandMap[item.brandId];
             const category = categoriesMap[item.categoryId];
-            return { ...item, brand, category } as Product;
+            const averageRating = averageRatings[item.id];
+            return { ...item, brand, category, averageRating } as Product;
         })
+
+        console.log('list products result', result);
 
         return paginatedResponse(result, dto);
     }
@@ -63,7 +75,6 @@ export class ProductHttpController {
     @HttpCode(HttpStatus.OK)
     async getProduct(@Param('id') id: string){
         const result = await this.repo.get(id);
-
         if (!result) {
             return new NotFoundException();
         }

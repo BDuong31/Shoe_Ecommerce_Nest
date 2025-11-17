@@ -11,8 +11,8 @@ export class UserRPCClient implements IPublicUserRpc {
             const user = data.data;
             return {
                 id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                fullName: user.fullName,
+                avatar: user.avatar,
                 email: user.email,
                 phone: user.phone,
             } as PublicUser;
@@ -27,8 +27,8 @@ export class UserRPCClient implements IPublicUserRpc {
         const users = data.data.map((user: any) => {
             return {
                 id: user.id,
-                firstName: user.firstName,
-                lastName: user.lastName,
+                fullName: user.fullName,
+                avatar: user.avatar,
                 email: user.email,
                 phone: user.phone,
             } as PublicUser;

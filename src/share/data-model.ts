@@ -20,8 +20,8 @@ export enum CouponType {
 
 export const publicUserSchema = z.object({
     id: z.string().uuid(),
-    firstName: z.string(),
-    lastName: z.string(),
+    fullName: z.string(),
+    avatar: z.string().nullable().optional(),
     email: z.string().email(),
     phone: z.string().min(10),
 })
@@ -133,7 +133,7 @@ export interface PublicCoupon extends z.infer<typeof publicCouponSchema> {}
 
 export const publicOrderSchema = z.object({
   id: z.string().uuid(),
-  totalAmout: z.number().int().nonnegative().default(0),
+  totalAmount: z.number().int().nonnegative().default(0),
   status: z.string().default('pending'),
   userId: z.string().uuid(),
   shippingAddressId: z.string().uuid(),
@@ -154,6 +154,17 @@ export const publicOrderItemSchema = z.object({
 })
 
 export interface PublicOrderItem extends z.infer<typeof publicOrderItemSchema> {}
+
+export const publicOrderCouponSchema = z.object({
+    id: z.string().uuid(),
+    discountApplied: z.number().nonnegative(),
+    orderId: z.string().uuid(),
+    couponId: z.string().uuid(),
+    createdAt: z.date(),
+    updatedAt: z.date()
+})
+
+export interface PublicOrderCoupon extends z.infer<typeof publicOrderCouponSchema> {}
 
 export const PublicPaymentSchema = z.object({
   id: z.string().uuid(),

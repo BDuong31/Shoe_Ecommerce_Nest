@@ -8,7 +8,7 @@ export class CouponRPCClient implements IPublicCouponRpc {
 
     async findById(id: string): Promise<PublicCoupon | null> {
         try {
-            const { data } = await axios.post(`${this.couponServiceUrl}/coupons/rpc/${id}`)
+            const { data } = await axios.get(`${this.couponServiceUrl}/coupons/rpc/${id}`)
             const coupon = data.data;
             return {
                 id: coupon.id,

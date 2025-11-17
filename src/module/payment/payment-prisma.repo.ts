@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Paginated, PagingDTO } from "src/share";
 import { IPaymentRepository } from "./payment.port";
 import prisma from "src/share/components/prisma";
-import { FilterPaymentDTO } from "./payment.model";
+import { FilterPaymentDTO, UpdatePaymentDTO } from "./payment.model";
 import { Payment } from "./payment.model";
 import { Payment as PrismaPayment, TransactionStatus } from "@prisma/client";
 
@@ -16,11 +16,17 @@ export class PaymentPrismaRepository implements IPaymentRepository {
     }
 
     async list(cond: FilterPaymentDTO, paging: PagingDTO): Promise<Paginated<Payment>> {
-        const { minAmount, maxAmount, method, ...rest } = cond;
+        const { minAmount, maxAmount, method, orderId } = cond;
 
-        let where = {
-            ...rest,
+        let where = {} as FilterPaymentDTO;
+
+        if (orderId) {
+            where = {
+                ...where,
+                orderId: orderId,
+            } as FilterPaymentDTO
         }
+
         if (minAmount !== undefined) {
             where = {
                 ...where,
@@ -73,7 +79,8 @@ export class PaymentPrismaRepository implements IPaymentRepository {
         await prisma.payment.create({ data: payment });
     }
 
-    async update(id: string, dto: Partial<Payment>): Promise<void> {
+    async update(id: string, dto: UpdatePaymentDTO): Promise<void> {
+        console.log('Updating payment', id, dto);
         await prisma.payment.update({
             where: { id },
             data: dto,

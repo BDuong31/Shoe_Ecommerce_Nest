@@ -17,11 +17,11 @@ export class OrderPrismaRepository implements IOrderRepository {
     }
 
     async list(cond: FilterOrderDTO, paging: PagingDTO, requester: Requester): Promise<Paginated<Order>> {
-        const { totalAmount, status, shippingAddressId, ...rest } = cond;
+        const { totalAmount, status, shippingAddressId } = cond;
         const userId = requester.sub;
         console.log('userId in repo:', userId);
         let where = {
-            ...rest,
+            ...cond,
         }
         if (totalAmount !== undefined) {
             where = {
@@ -68,6 +68,7 @@ export class OrderPrismaRepository implements IOrderRepository {
         };
     }
 
+    // Lấy danh sách đơn hàng theo danh sách id
     async listByIds(ids: string[]): Promise<Order[]> {
         const data = await prisma.order.findMany({ where: { id: { in: ids } } });
         return data.map(this._toModel);

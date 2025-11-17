@@ -53,6 +53,7 @@ export const createCartItemDTOSchema = cartItemSchema.pick({
 export type CreateCartItemDTO = z.infer<typeof createCartItemDTOSchema>;
 
 export const updateCartItemDTOSchema = cartItemSchema.pick({
+    variantId: true,
     quantity: true,
 }).partial();
 

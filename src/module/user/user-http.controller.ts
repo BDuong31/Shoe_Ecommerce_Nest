@@ -1,12 +1,13 @@
-import { Body,Req, Res, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Request, UseGuards } from "@nestjs/common";
+import { Body,Req, Res, Controller, Delete, Get, HttpCode, HttpStatus, Inject, Param, Patch, Post, Request, UseGuards, UseInterceptors, UploadedFile } from "@nestjs/common";
 import { Request as ExpressRequest } from "express";
 import { AppError, ErrNotFound, ReqWithRequester, UserRole } from "src/share";
 import { RemoteAuthGuard, Roles, RolesGuard } from "src/share/guard";
-import { USER_REPOSITORY, USER_SERVICE } from "./user.di-token";
+import { USER_COUPON_REPOSITORY, USER_COUPON_SERVICE, USER_REPOSITORY, USER_SERVICE } from "./user.di-token";
 import { UserLoginDTO, UserRegistrationDTO, UserUpdateDTO, UserUpdateProfileDTO, UserChangePasswordDTO } from "./user.dto";
-import { ErrInvalidToken, User } from "./user.model";
-import { IUserRepository, IUserService } from "./user.port";
+import { CreateUserCouponDTO, ErrInvalidToken, User } from "./user.model";
+import { IUserCouponRepository, IUserCouponService, IUserRepository, IUserService } from "./user.port";
 import { AuthGuard } from "@nestjs/passport";
+import { FileInterceptor } from "@nestjs/platform-express";
 
 // Lớp UserHttpController cung cấp các phương thức xử lý request HTTP
 @Controller()
@@ -47,11 +48,15 @@ export class UserHttpController {
 
   // Phương thức cập nhật hồ sơ người dùng
   @Patch('v1/profile')
+  @UseInterceptors(FileInterceptor('file'))
   @UseGuards(RemoteAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async updateProfile(@Request() req: ReqWithRequester, @Body() dto: UserUpdateProfileDTO) {
+  async updateProfile(@Request() req: ReqWithRequester, @Body() dto: UserUpdateProfileDTO, @UploadedFile() file?: Express.Multer.File) {
     const requester = req.requester;
-    const data = await this.userService.update(requester, requester.sub, dto);
+    console.log("Update profile called by requester:", requester);
+    console.log("Update profile DTO:", dto);
+    console.log("Update profile file:", file);
+    const data = await this.userService.update(requester, requester.sub, dto, file);
     return { data: data };
   }
 
@@ -139,3 +144,36 @@ export class UserRpcHttpController {
   }
 }
 
+@Controller('v1/user')
+export class UserCouponRpcHttpController {
+  constructor(
+    @Inject(USER_COUPON_REPOSITORY) private readonly userCouponRepo: IUserCouponRepository,
+    @Inject(USER_COUPON_SERVICE) private readonly userCouponService: IUserCouponService,
+  ){}
+
+  @Post('coupons/assign')
+  @UseGuards(RemoteAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async assignCouponToUser(@Request() req: ReqWithRequester, @Body() dto: CreateUserCouponDTO) {
+    const data = await this.userCouponService.assignCouponToUser(dto.userId, dto.couponId);
+    return { data };
+  }
+
+  @Get('coupons')
+  @UseGuards(RemoteAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async listUserCoupons(@Request() req: ReqWithRequester) {
+    const requester = req.requester;
+    const data = await this.userCouponService.listUserCoupons(requester.sub);
+    return { data };
+  }
+
+  @Post('coupons/use/:couponId')
+  @UseGuards(RemoteAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async useUserCoupon(@Request() req: ReqWithRequester, @Param('couponId') couponId: string) {
+    const requester = req.requester;
+    await this.userCouponService.useUserCoupon(requester.sub, couponId);
+    return { data: true };
+  }
+}
