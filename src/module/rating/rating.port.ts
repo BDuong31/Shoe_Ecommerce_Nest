@@ -12,6 +12,7 @@ export interface IRatingRepository {
     get(id: string): Promise<Review | null>;
     list(cond: FilterReviewDTO, paging: PagingDTO): Promise<Paginated<Review>>;
     listByIds(ids: string[]): Promise<Review[]>;
+    checkReviewExist(userId: string, productId: string): Promise<boolean>;
     getAverageRatingByProduct(productId: string): Promise<ProductAvgRating>;
 
     insert(review: Review): Promise<void>;

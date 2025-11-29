@@ -9,7 +9,7 @@ export class FavoriteRPCClient implements IPublicFavoriteRpc {
     async isProductFavoritedByUser(productId: string, userId: string): Promise<boolean> {
         try {
             const { data } = await axios.post(`${this.favoriteServiceUrl}/favorites/rpc/is-favorited`, { productId, userId });
-            return data.isFavorited;
+            return data.data;
         } catch (error) {
             return false;
         }

@@ -10,7 +10,8 @@ export interface IProductService {
 export interface IProductRepository {
     get(id: string): Promise<Product | null>;
     list(cond: FilterProductDTO, paging: PagingDTO): Promise<Paginated<Product>>;
-    listByIds(ids: string[]): Promise<Product[]>;
+    listByIds(ids: string[], ): Promise<Product[]>;
+    listBySearch(keyword: string, paging: PagingDTO): Promise<Paginated<Product>>;
 
     insert(product: Product): Promise<void>;
     update(id: string, dto: UpdateProductDTO): Promise<void>;

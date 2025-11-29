@@ -64,6 +64,15 @@ export class OrderHttpController {
         const data = await this.orderRepo.listByIds(ids);
         return { data: data };
     }
+
+    @Post('rpc/list-by-user/:userId')
+    @HttpCode(HttpStatus.OK)
+    async listOrdersByUser(@Request() req: ReqWithRequester, @Param('userId') userId: string){
+        const paging: PagingDTO = { page: 1, limit: 10 };
+        const data = await this.orderRepo.list({ userId: userId }, paging, req.requester);
+        return { data };
+    }
+    
     @Post('rpc/:id')
     @HttpCode(HttpStatus.OK)
     async getOrderById(@Request() req: ReqWithRequester, @Param('id') id: string){

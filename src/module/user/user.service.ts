@@ -171,8 +171,6 @@ export class UserService implements IUserService {
 
     // 5. Kiểm tra địa chỉ ví
     if (user.walletAddress !== data.walletAddress && data.walletAddress !== undefined) {
-      console.log("Checking wallet address:", data.walletAddress);
-      console.log("Current user wallet address:", user.walletAddress);
       const walletUsers = await this.userRepo.findByCond({ walletAddress: data.walletAddress || '' });
       if (walletUsers) {
         throw AppError.from(ErrWalletAddressInvalid, 400);
@@ -181,7 +179,6 @@ export class UserService implements IUserService {
 
     // 6. Xử lý ảnh đại diện nếu có
     if (file) {
-      console.log("anh");
       try {
         const fileUri = this.fileToDataUri(file);
         uploadResult = await cloudinary.uploader.upload(fileUri, {
@@ -266,14 +263,12 @@ export class UserCouponService implements IUserCouponService {
   async assignCouponToUser(userId: string, couponId: string): Promise<string> {
     const user = await this.userRpc.findById(userId);
     
-    console.log('user ', user);
     if (!user) {
       throw AppError.from(ErrNotFound, 404).withLog(`User with id ${userId} not found`);
     }
 
     const coupon = await this.couponRpc.findById(couponId);
 
-    console.log('coupon ', coupon);
     if (!coupon) {
       throw AppError.from(ErrNotFound, 404).withLog(`Coupon with id ${couponId} not found`);
     }
@@ -299,6 +294,17 @@ export class UserCouponService implements IUserCouponService {
     return userCoupons;
   }
 
+  async checkCouponUsable(userId: string, couponId: string): Promise<boolean> {
+    const userCoupons =  await this.userCouponRepo.listByUserId(userId);
+    const userCoupon = userCoupons.find(uc => uc.couponId === couponId);
+
+    if (!userCoupon) {
+      return false;
+    }
+
+    return userCoupon.status === UserCouponStatus.AVAILABLE;
+  }
+
   async useUserCoupon(userId: string, couponId: string): Promise<void> {
     const userCoupons =  await this.userCouponRepo.listByUserId(userId);
     const userCoupon = userCoupons.find(uc => uc.couponId === couponId);
@@ -312,5 +318,19 @@ export class UserCouponService implements IUserCouponService {
     }
 
     await this.userCouponRepo.update(userCoupon.id, { status: UserCouponStatus.USED });
+  }
+
+  async remmoveUseUserCoupon(userId: string, couponId: string): Promise<void> {
+    const userCoupons =  await this.userCouponRepo.listByUserId(userId);
+    const userCoupon = userCoupons.find(uc => uc.couponId === couponId);  
+    if (!userCoupon) {
+      throw AppError.from(ErrNotFound, 404).withLog(`UserCoupon with couponId ${couponId} not found for user ${userId}`);
+    }
+
+    if (userCoupon.status !== UserCouponStatus.USED) {
+      throw AppError.from(ErrInvalidRequest, 400).withLog(`UserCoupon with couponId ${couponId} is not used`);
+    }
+
+    await this.userCouponRepo.update(userCoupon.id, { status: UserCouponStatus.AVAILABLE });
   }
 }

@@ -36,5 +36,7 @@ export interface IUserCouponRepository {
 export interface IUserCouponService {
     assignCouponToUser(userId: string, couponId: string): Promise<string>;
     listUserCoupons(userId: string): Promise<UserCoupon[]>;
+    checkCouponUsable(userId: string, couponId: string): Promise<boolean>;
     useUserCoupon(userId: string, couponId: string): Promise<void>;
+    remmoveUseUserCoupon(userId: string, couponId: string): Promise<void>;
 }

@@ -3,7 +3,7 @@ import { IMAGE_REPOSITORY, IMAGE_SERVICE } from "./image.di-token";
 import { IImageRepository, IImageService } from "./image.port";
 import { RemoteAuthGuard, Roles, RolesGuard } from "src/share/guard";
 import { paginatedResponse, PagingDTO, pagingDTOSchema, ReqWithRequester, UserRole } from "src/share";
-import { CreateImageDTO, FilterImageDTO, filterImageDTOSchema } from "./image.model";
+import { CreateImageDTO, FilterImageDTO, filterImageDTOSchema, ImageType } from "./image.model";
 import { FileInterceptor } from "@nestjs/platform-express";
 
 @Controller('v1/images')
@@ -14,9 +14,8 @@ export class ImageHttpController {
     ) {}
 
     @Post()
-    @UseInterceptors(FileInterceptor('file')) // Thêm FileInterceptor để xử lý file, 'file' là tên field trong form-data
-    @UseGuards(RemoteAuthGuard, RolesGuard)
-    @Roles(UserRole.ADMIN)
+    @UseInterceptors(FileInterceptor('file')) 
+    @UseGuards(RemoteAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     async createImage(@Body() dto: CreateImageDTO, @UploadedFile() file: Express.Multer.File){
         const data = await this.service.create(dto, file);
@@ -55,5 +54,17 @@ export class ImageHttpController {
     async deleteImage(@Param('id') id: string){
         const data = await this.service.delete(id);
         return { data };
+    }
+
+    @Post('rpc/get-by-ref-id')
+    @HttpCode(HttpStatus.OK)
+    async getImagesByRefId(@Body() dto: { refId: string[], type: ImageType, isMain?: boolean }){
+        if (dto.isMain === undefined){
+            const data = await this.repo.listByRefIds(dto.refId, dto.type);
+            return { data };
+        } else {
+            const data = await this.repo.listByRefIds(dto.refId, dto.type, dto.isMain);
+            return { data };
+        }
     }
 }  

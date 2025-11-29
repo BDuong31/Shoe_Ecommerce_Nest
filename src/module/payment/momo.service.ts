@@ -57,7 +57,6 @@ export class MomoService {
 
         try {
             const result = await axios.post(this.config.endpoint, requestBody);
-            console.log('MOMO Create Response:', result.data);
             return result.data.payUrl;
         } catch (error) {
             console.error('MOMO Create Error:', error.response.data);

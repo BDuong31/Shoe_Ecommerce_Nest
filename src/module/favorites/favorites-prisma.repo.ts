@@ -58,7 +58,7 @@ export class FavoritePrismaRepository implements IFavoriteRepository {
                 userId,
             },
         });
-        return count > 0;
+        return (count > 0 || count === null) ? true : false;
     }
 
     async insert(favorite: Favorite): Promise<void> {

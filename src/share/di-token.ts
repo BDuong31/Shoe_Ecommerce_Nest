@@ -12,4 +12,5 @@ export const COUPON_RPC = Symbol('COUPON_RPC'); // Định danh cho coupon rpc
 export const PAYMENT_RPC = Symbol('PAYMENT_RPC'); // Định danh cho payment rpc
 export const SHIPPING_RPC = Symbol('SHIPPING_RPC'); // Định danh cho shipping rpc
 export const FAVORITES_RPC = Symbol('FAVORITES_RPC'); // Định danh cho favorites rpc
+export const IMAGE_RPC = Symbol('IMAGE_RPC'); // Định danh cho image rpc
 export const REMOTE_AUTH_GUARD = Symbol('REMOTE_AUTH_GUARD'); // Định danh cho remote auth guard

@@ -24,10 +24,9 @@ export class PaymentService implements IPaymentService {
         const data = CreatePaymentSchema.parse(dto);
 
         const order = await this.orderRpc.getOrderStatus(data.orderId);
-        console.log('order', order);
-        // if (!order) {
-        //     throw AppError.from(ErrPaymentNotFound, 409);
-        // }
+        if (!order) {
+            throw AppError.from(ErrPaymentNotFound, 409);
+        }
 
         const newId = v7();
 
@@ -83,7 +82,6 @@ export class PaymentService implements IPaymentService {
         }
 
         const order = await this.orderRpc.getOrderStatus(payment.orderId);
-        console.log('order', order," userId", userId);
         if (!order || order.userId !== userId) {
             throw AppError.from(ErrPaymentOrderMismatch, 403);
         }
@@ -91,7 +89,6 @@ export class PaymentService implements IPaymentService {
         const orderCoupon = await this.orderRpc.getOrderCoupon(order.id);
         const discount = orderCoupon ? orderCoupon.discountApplied : 0;
         const amountDelivery = order.shippingAddressId === 'collect_in_store' ? 0 : 60000; 
-        console.log('Calculating amount to pay:', 'order total', order.totalAmount, 'discount', discount, 'delivery', amountDelivery);
         const amountToPay = order.totalAmount + amountDelivery - discount;
         if (dto.method === 'cod') {
             const paymentId = await this.updatePaymentRecord('cod', amountToPay, dto.paymentId, TransactionStatus.SUCCESS);
@@ -118,8 +115,6 @@ export class PaymentService implements IPaymentService {
             default:
                 throw AppError.from(ErrPaymentMethodNotSupported, 400);
         }
-
-        console.log('Generated payment URL:', paymentUrl);
 
         return { success: true, paymentUrl: paymentUrl };
     }
@@ -160,7 +155,6 @@ export class PaymentService implements IPaymentService {
         }
 
         if (payment.status !== TransactionStatus.PENDING) {
-            console.log(`Payment ${paymentId} already processed.`);
             return true;
         }
         if (payment.amount !== amount) {

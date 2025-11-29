@@ -12,6 +12,7 @@ export interface IImageRepository {
     get(id: string): Promise<Image | null>;
     list(cond: FilterImageDTO, paging: PagingDTO): Promise<Paginated<Image>>;
     listByIds(ids: string[]): Promise<Image[]>;
+    listByRefIds(refId: string[], type: string, isMain?: boolean): Promise<Image[]>;
 
     insert(image: Image): Promise<void>;
     update(id: string, dto: UpdateImageDTO): Promise<void>;

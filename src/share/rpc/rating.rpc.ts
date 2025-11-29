@@ -8,7 +8,7 @@ export class RatingRPCClient implements IPublicRatingRpc {
 
     async getProductAvgRating(id: string): Promise<PublicRating | null> {
         try {
-            const { data } = await axios.get(`${this.productServiceUrl}/rpc/average-rating/${id}`)
+            const { data } = await axios.get(`${this.productServiceUrl}/ratings/rpc/average-rating/${id}`)
             const rating = data.data;
             return {
                 productId: rating.productId,

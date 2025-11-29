@@ -5,12 +5,29 @@ import axios from "axios";
 @Injectable()
 export class OrderRPCClient implements IPublicOrderRpc {
     constructor(private readonly orderServiceUrl: string) {}
-
+    async listByUser(userId: string): Promise<PublicOrder[]> {
+        try {
+            const { data } = await axios.post(`${this.orderServiceUrl}/orders/rpc/list-by-user/${userId}`)
+            const orders = data.data.map((order: any) => {
+                return {
+                    id: order.id,
+                    totalAmount: parseFloat(order.totalAmount),
+                    status: order.status,
+                    userId: order.userId,
+                    shippingAddressId: order.shippingAddressId,
+                    createdAt: new Date(order.createdAt),
+                    updatedAt: order.updatedAt ? new Date(order.updatedAt) : undefined,
+                } as PublicOrder;
+            });
+            return orders;
+        } catch (error) {
+            return [];
+        }
+    }
     async getOrderStatus(id: string): Promise<PublicOrder | null> {
         try {
             const { data } = await axios.post(`${this.orderServiceUrl}/orders/rpc/${id}`)
             const order = data.data;
-            console.log('Fetched order data:', order);
             return {
                 id: order.id,
                 totalAmount: parseFloat(order.totalAmount),

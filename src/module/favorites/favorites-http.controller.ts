@@ -46,14 +46,7 @@ export class FavoriteHttpController {
         return { data }
     }
 
-    @Post('rpc/:id')
-    @HttpCode(HttpStatus.OK)
-    async getFavoriteById(@Request() req: ReqWithRequester, @Param('id') id: string){
-        const data = await this.repo.get(id);
-        return { data };
-    }
-
-    @Post('rpc/is-favorited')
+        @Post('rpc/is-favorited')
     @HttpCode(HttpStatus.OK)
     async isProductFavoritedByUser(@Request() req: ReqWithRequester, @Body() dto: FilterFavoriteDTO) {
         dto = filterFavoriteDTOSchema.parse(dto);
@@ -66,5 +59,12 @@ export class FavoriteHttpController {
     async listFavoriteByIds(@Request() req: ReqWithRequester, @Body() dto: {ids: string[]}){
         const data = await this.repo.listByIds(dto.ids)
         return { data }
+    }
+
+    @Post('rpc/:id')
+    @HttpCode(HttpStatus.OK)
+    async getFavoriteById(@Request() req: ReqWithRequester, @Param('id') id: string){
+        const data = await this.repo.get(id);
+        return { data };
     }
 }

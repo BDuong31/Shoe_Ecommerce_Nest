@@ -53,9 +53,6 @@ export class UserHttpController {
   @HttpCode(HttpStatus.OK)
   async updateProfile(@Request() req: ReqWithRequester, @Body() dto: UserUpdateProfileDTO, @UploadedFile() file?: Express.Multer.File) {
     const requester = req.requester;
-    console.log("Update profile called by requester:", requester);
-    console.log("Update profile DTO:", dto);
-    console.log("Update profile file:", file);
     const data = await this.userService.update(requester, requester.sub, dto, file);
     return { data: data };
   }
@@ -166,6 +163,24 @@ export class UserCouponRpcHttpController {
     const requester = req.requester;
     const data = await this.userCouponService.listUserCoupons(requester.sub);
     return { data };
+  }
+
+  @Get('coupons/check/:couponId')
+  @UseGuards(RemoteAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async checkCouponUsable(@Request() req: ReqWithRequester, @Param('couponId') couponId: string) {
+    const requester = req.requester;
+    const data = await this.userCouponService.checkCouponUsable(requester.sub, couponId);
+    return { data };
+  }
+
+  @Post('coupons/remove/:couponId')
+  @UseGuards(RemoteAuthGuard) 
+  @HttpCode(HttpStatus.OK)
+  async removeUseUserCoupon(@Request() req: ReqWithRequester, @Param('couponId') couponId: string) {
+    const requester = req.requester;
+    await this.userCouponService.remmoveUseUserCoupon(requester.sub, couponId);
+    return { data: true };
   }
 
   @Post('coupons/use/:couponId')

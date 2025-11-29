@@ -3,7 +3,7 @@ import { IPublicProductRpc, Paginated, PagingDTO } from "src/share";
 import { IProductRepository } from "./product.port";
 import prisma from "src/share/components/prisma";
 import { FilterProductDTO } from "./product.model";
-import { Product as PrismaProduct } from "@prisma/client";
+import { Prisma, Product as PrismaProduct } from "@prisma/client";
 import { Product } from "./product.model";
 
 @Injectable()
@@ -67,6 +67,31 @@ export class ProductPrismaRepository implements IProductRepository {
         const data = await prisma.product.findMany({ where: { id: { in: ids } } });
         return data.map(this._toModel);
     }
+
+    async listBySearch(keyword: string, paging: PagingDTO): Promise<Paginated<Product>> {
+        const where = {
+            productName: { contains: keyword, mode: 'insensitive' as Prisma.QueryMode },
+        };
+
+        const total = await prisma.product.count({ where: where });
+
+        const skip = (paging.page - 1) * paging.limit;
+
+        const result = await prisma.product.findMany({
+            where,
+            skip,
+            take: paging.limit,
+            orderBy: {
+                id: 'desc',
+            },
+        });
+
+        return {
+            data: result.map(this._toModel),
+            paging,
+            total
+        };
+    }  
 
     async insert(product: Product): Promise<void> {
         await prisma.product.create({ data: product });

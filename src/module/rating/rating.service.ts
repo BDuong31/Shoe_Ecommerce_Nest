@@ -2,11 +2,11 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IRatingRepository, IRatingService } from './rating.port';
 import { RATING_REPOSITORY } from './rating.di-token';
 import { CreateReviewDTO, CreateReviewDTOSchema, ErrReviewExist, ErrReviewNotFound, UpdateReviewDTOSchema } from './rating.model';
-import { AppError, IPublicProductRpc, IPublicUserRpc } from 'src/share';
+import { AppError, IPublicOrderRpc, IPublicProductRpc, IPublicUserRpc } from 'src/share';
 import { v7 } from 'uuid';
 import { ErrUserNotFound } from '../address/address.model';
 import { ErrProductNotFound } from '../product/product.model';
-import { PRODUCT_RPC, USER_RPC } from 'src/share/di-token';
+import { ORDER_RPC, PRODUCT_RPC, USER_RPC } from 'src/share/di-token';
 
 @Injectable()
 export class RatingService implements IRatingService {
@@ -14,6 +14,7 @@ export class RatingService implements IRatingService {
         @Inject(RATING_REPOSITORY) private readonly ratingRepo: IRatingRepository,
         @Inject(USER_RPC) private readonly userRpc: IPublicUserRpc,
         @Inject(PRODUCT_RPC) private readonly productRpc: IPublicProductRpc,
+        @Inject(ORDER_RPC) private readonly orderRpc: IPublicOrderRpc,
     ) {}
 
     async create(dto: CreateReviewDTO): Promise<string> {

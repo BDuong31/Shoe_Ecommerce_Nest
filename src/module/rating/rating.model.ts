@@ -1,6 +1,7 @@
 import e from 'express';
 import { PublicUser } from 'src/share';
 import { z } from 'zod';
+import { Image } from '../image/image.model';
 
 export const ErrReviewExist = new Error('Review already exists'); 
 export const ErrReviewNotFound = new Error('Review not found');
@@ -14,7 +15,7 @@ export const ReviewSchema = z.object({
     updatedAt: z.date(),
 })
 
-export type Review = z.infer<typeof ReviewSchema> & { User?: PublicUser };
+export type Review = z.infer<typeof ReviewSchema> & { User?: PublicUser, Image?: Image[] };
 
 export const CreateReviewDTOSchema = ReviewSchema.pick({
     rating: true,

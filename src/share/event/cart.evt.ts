@@ -16,7 +16,6 @@ export type CartEventPayload = {
   quantity?: number;
 };
 
-// Lớp sự kiện chung cho giỏ hàng
 export class CartEvent<T extends CartEventPayload> extends AppEvent<T> {
   protected constructor(
     eventName: string,
@@ -26,7 +25,6 @@ export class CartEvent<T extends CartEventPayload> extends AppEvent<T> {
     super(eventName, payload, options);
   }
   
-  // Phương thức tĩnh để tạo sự kiện mới
   protected static createEvent<T extends CartEventPayload>(
     eventName: string,
     payload: T,

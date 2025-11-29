@@ -1,4 +1,4 @@
-import { PublicBrand, publicBrandSchema, PublicCategory, publicCategorySchema, PublicRating } from 'src/share';
+import { PublicBrand, publicBrandSchema, PublicCategory, publicCategorySchema, PublicImage, PublicRating } from 'src/share';
 import { z } from 'zod';
 import { ProductAvgRating } from '../rating/rating.model';
 
@@ -24,7 +24,7 @@ export const productSchema = z.object({
     updatedAt: z.date(),
 })
 
-export type Product =  z.infer<typeof productSchema> & { brand?: PublicBrand, category?: PublicCategory, averageRating?: PublicRating, isFavorited?: boolean };
+export type Product =  z.infer<typeof productSchema> & { brand?: PublicBrand, category?: PublicCategory,images?: PublicImage[], averageRating?: PublicRating, isFavorited?: boolean };
 
 export const createProductDTOSchema = productSchema.pick({
     productName: true,

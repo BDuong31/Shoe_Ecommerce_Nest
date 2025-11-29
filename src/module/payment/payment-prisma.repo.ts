@@ -80,7 +80,6 @@ export class PaymentPrismaRepository implements IPaymentRepository {
     }
 
     async update(id: string, dto: UpdatePaymentDTO): Promise<void> {
-        console.log('Updating payment', id, dto);
         await prisma.payment.update({
             where: { id },
             data: dto,

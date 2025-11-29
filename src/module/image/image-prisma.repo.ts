@@ -58,6 +58,21 @@ export class ImagePrismaRepository implements IImageRepository {
         return data.map(this._toModel);
     }
 
+    async listByRefIds(refIds: string[], type: string, isMain?: boolean): Promise<Image[]> {
+        let where: any = {
+            refId: { in: refIds },
+            type,
+        };
+        
+        if (isMain !== undefined) {
+            where.isMain = isMain;
+        }
+
+
+        const data = await prisma.image.findMany({ where });
+        return data.map(this._toModel);
+    }
+
     async insert(image: Image): Promise<void> {
         await prisma.image.create({ data: image });
     }

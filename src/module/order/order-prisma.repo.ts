@@ -19,7 +19,6 @@ export class OrderPrismaRepository implements IOrderRepository {
     async list(cond: FilterOrderDTO, paging: PagingDTO, requester: Requester): Promise<Paginated<Order>> {
         const { totalAmount, status, shippingAddressId } = cond;
         const userId = requester.sub;
-        console.log('userId in repo:', userId);
         let where = {
             ...cond,
         }

@@ -1,4 +1,4 @@
-import { AppEvent, PublicAddress, PublicBrand, PublicCategory, PublicCoupon, PublicOrder, PublicOrderCoupon, PublicOrderItem, PublicPayment, PublicProduct, PublicRating, PublicShipping, PublicUser, PublicVariant } from "./data-model";
+import { AppEvent, PublicAddress, PublicBrand, PublicCategory, PublicCoupon, PublicImage, PublicOrder, PublicOrderCoupon, PublicOrderItem, PublicPayment, PublicProduct, PublicRating, PublicShipping, PublicUser, PublicVariant } from "./data-model";
 export interface TokenPayload {
   sub: string;
   role: UserRole;
@@ -30,7 +30,7 @@ export interface ITokenIntrospect {
 // Định nghĩa emun cho user role
 export enum UserRole {
   ADMIN = 'admin',
-  CUSTOMER = 'customer'
+  CUSTOMER = 'customer',
 }
 
 export interface IPublicUserRpc {
@@ -75,6 +75,7 @@ export interface IPublicCouponRpc {
 }
 
 export interface IPublicOrderRpc {
+  listByUser(userId: string): Promise<PublicOrder[]>;
   getOrderStatus(id: string): Promise<PublicOrder | null>;
   getOrderItems(id: string): Promise<Array<PublicOrderItem> | null>;
   getOrderCoupon(id: string): Promise<PublicOrderCoupon | null>;
@@ -90,6 +91,10 @@ export interface IPublicShippingRpc {
 
 export interface IPublicFavoriteRpc {
   isProductFavoritedByUser(productId: string, userId: string): Promise<boolean>;
+}
+
+export interface IPublicImageRpc {
+  getImagesByRefId(refId: string[] | string, type: string, isMain?: boolean): Promise<PublicImage[]>;
 }
 export type EventHandler = (msg: string) => void;
 

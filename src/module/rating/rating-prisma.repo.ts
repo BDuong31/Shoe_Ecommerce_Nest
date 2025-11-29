@@ -18,7 +18,7 @@ export class RatingPrismaRepository implements IRatingRepository {
     async list(cond:FilterReviewDTO, paging: PagingDTO): Promise<Paginated<Review>> {
         const { rating, userId, productId, ...rest } = cond;
 
-        let where = {
+        let where: any = {
             ...rest,
         }
         if (rating) {
@@ -66,13 +66,28 @@ export class RatingPrismaRepository implements IRatingRepository {
         const data = await prisma.review.findMany({ where: { id: { in: ids } } });
         return data.map(this._toModdel);
     } 
+
+    async checkReviewExist(userId: string, productId: string): Promise<boolean> {
+        const data = await prisma.review.findFirst({ where: { userId, productId } });
+        if (data) {
+            if (data.comment === null && data.rating === 0) {
+                return true;
+            } else {
+                return false;
+            }
+        } else { 
+            return false;
+        }
+    }
+
     async getAverageRatingByProduct(productId: string): Promise<ProductAvgRating> {
         const result = await prisma.review.findMany({
-            where: { productId },
+            where: { productId, NOT: { rating: 0, comment: null } },
             select: {
                 rating: true,
             },
         });
+
 
         if (result.length === 0) {
             return null;

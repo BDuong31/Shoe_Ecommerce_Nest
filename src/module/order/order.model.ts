@@ -45,7 +45,8 @@ export type UpdateOrderStatusDTO = z.infer<typeof UpdateOrderStatusSchema>;
 export const FilterOrderSchema = z.object({
     totalAmount: z.number().nonnegative().optional(),
     status: z.nativeEnum(OrderStatus).optional(),
-    shippingAddressId: z.string().uuid().optional()
+    shippingAddressId: z.string().uuid().optional(),
+    userId: z.string().uuid().optional()
 });
 
 export type FilterOrderDTO = z.infer<typeof FilterOrderSchema>;

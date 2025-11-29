@@ -191,6 +191,19 @@ export const PublicShippingSchema = z.object({
 
 export interface PublicShipping extends z.infer<typeof PublicShippingSchema> {}
 
+export const PublicImageSchema = z.object({
+  id: z.string().uuid(),
+  url: z.string(),
+  isMain: z.boolean(),
+  type: z.string(),
+  publicId: z.string(),
+  refId: z.string().uuid(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+})
+
+export interface PublicImage extends z.infer<typeof PublicImageSchema> {}
+
 export abstract class AppEvent<Payload> {
   private _id: string; // 
   private _occurredAt: Date;
